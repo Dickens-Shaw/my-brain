@@ -1,0 +1,29 @@
+.cursor/
+.test_tools/
+__pycache__/
+*.pyc
+
+# 本机配置，含账号 ID 之类的个人标识；.env.example 是可提交的模板
+.env
+.env.*
+!.env.example
+
+# 微信收藏导出过程中的本地敏感/生成文件
+wechat-favorites-export/output/
+wechat-favorites-export/decrypted/
+wechat-favorites-export/*.json
+wechat-favorites-export/*.db
+wechat-favorites-export/*.db-*
+wechat-favorites-export/.cache/
+
+# Chrome 书签导出的本地生成文件
+chrome-bookmarks-export/output/
+chrome-bookmarks-export/*.json
+chrome-bookmarks-export/.cache/
+
+# 掘金文章导出的本地生成文件
+juejin-articles-export/output/
+juejin-articles-export/*.json
+juejin-articles-export/.cache/
+# Cookie 配置等同于账号凭证
+*cookies*.json
