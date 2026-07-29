@@ -25,5 +25,6 @@ chrome-bookmarks-export/.cache/
 juejin-articles-export/output/
 juejin-articles-export/*.json
 juejin-articles-export/.cache/
+juejinbook
 # Cookie 配置等同于账号凭证
 *cookies*.json
