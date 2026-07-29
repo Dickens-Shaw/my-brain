@@ -1,5 +1,7 @@
 # my-brain
 
+简体中文 | [English](README.en.md)
+
 把微信收藏、Chrome 书签、掘金点赞批量导出为带 frontmatter 的本地 Markdown 知识库。
 只读本机数据，纯 Python 标准库，零第三方依赖。
 
@@ -93,3 +95,10 @@ source_url: "http://mp.weixin.qq.com/s?..."
   Cookie 里那串 `sessionid` 等价于账号密码。
 - 微信管线要求关闭 SIP，这会降低 macOS 的系统保护等级。取到密钥后建议立刻进恢复模式
   执行 `csrutil enable` 打回来。
+
+## 许可
+
+仓库里的代码用 [MIT](LICENSE)。
+
+这只覆盖工具本身。脚本抓到 `output/` 里的内容版权属于原作者，留着自己用就好，别去
+再分发——那个目录被 `.gitignore` 忽略也正是这个原因。
