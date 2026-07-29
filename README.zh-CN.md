@@ -2,14 +2,14 @@
 
 简体中文 | [English](README.md)
 
-把微信收藏、Chrome 书签、掘金点赞批量导出为带 frontmatter 的本地 Markdown 知识库。
-只读本机数据，纯 Python 标准库，零第三方依赖。
+把微信收藏、Chrome 书签、掘金点赞和收藏集、掘金小册批量导出为带 frontmatter 的本地
+Markdown 知识库。只读本机数据，纯 Python 标准库，零第三方依赖。
 
 收藏是攒下来了，但都锁在各家的 App 里：搜不到、备份不了、账号一没就全没了。
 这个仓库把它们一次性搬回本地，变成可以用 Obsidian / Logseq / ripgrep 直接检索的
 Markdown 文件。
 
-## 三条管线
+## 四条管线
 
 每个子目录是一条独立的管线，互不依赖，可以只跑其中一条。
 
@@ -17,16 +17,20 @@ Markdown 文件。
 |------|--------|------|----------|
 | [wechat-favorites-export](wechat-favorites-export/) | macOS 微信本地收藏库 `favorite.db` | `bash run.sh` | 3396 条收藏，抓到公众号正文 2894 篇 |
 | [chrome-bookmarks-export](chrome-bookmarks-export/) | Chrome / Edge / Brave / Arc 书签文件 | `bash run.sh` | 去重后 1049 条书签，抓到正文 606 篇 |
-| [juejin-articles-export](juejin-articles-export/) | 掘金「赞过的文章」 | `bash run.sh` | 647 篇，全部抓到正文 |
+| [juejin-articles-export](juejin-articles-export/) | 掘金「赞过的文章」和「收藏集」 | `bash run.sh` | 点赞 647 篇 + 收藏 37 篇，全部抓到正文 |
+| [juejin-books-export](juejin-books-export/) | 本机攒下的掘金小册 | `bash run.sh` | 39 册 829 章，转出 740 章 Markdown |
 
-三条管线的结构是同一套：分阶段执行，阶段之间用 JSON 衔接，任何一步都能单独重跑。
+四条管线的结构是同一套：分阶段执行，阶段之间用 JSON 衔接，任何一步都能单独重跑。
 
 ```
 数据源 ──→ 清单 JSON/CSV/MD ──→ 正文 Markdown ──→ 分类索引 / 知识库目录
 ```
 
-正文抓取都支持断点续传，进度记在 `.fetch_state.json` 里，`Ctrl+C` 会先存盘再退出，
-重新运行接着抓。抓不动的条目会归类写进 `未抓取清单.md`，不会静默丢掉。
+前三条管线都要联网抓正文，支持断点续传，进度记在 `.fetch_state.json` 里，`Ctrl+C` 会先
+存盘再退出，重新运行接着抓。抓不动的条目会归类写进 `未抓取清单.md`，不会静默丢掉。
+
+小册那条不联网：小册不是接口能拉的东西，`input/` 里放的是自己攒下来的下载产物，
+这条管线只做本地规整——形态识别、章节序号还原、HTML 转 Markdown、配图归位。
 
 ## 快速开始
 
@@ -36,18 +40,22 @@ Markdown 文件。
 cp .env.example .env
 ```
 
-里面就两项要填：掘金用户 ID（拉点赞列表用），以及微信账号目录名（只有一个微信账号时留空即可）。
+里面就两项要填：掘金用户 ID（拉点赞和收藏集列表用），以及微信账号目录名（只有一个微信账号时留空即可）。
+掘金的 `JUEJIN_COOKIE` 是选填的，只有想导出私有收藏集才需要。
 三个 `run.sh` 启动时会自动读根目录的 `.env`，也接受同名环境变量临时覆盖。
 
 ```bash
-cd juejin-articles-export && bash run.sh        # 最省事，不需要任何权限和凭证
+cd juejin-books-export && bash run.sh           # 全本地，不联网，几秒跑完
+cd juejin-articles-export && bash run.sh        # 不需要任何权限和凭证
 cd chrome-bookmarks-export && FETCH=1 bash run.sh
 cd wechat-favorites-export && bash run.sh       # 需要先关 SIP 并重签名微信，见其 README
 ```
 
-三条管线的门槛差别很大：
+四条管线的门槛差别很大：
 
-- **掘金**最简单，用的是公开接口，不需要 Cookie。
+- **掘金小册**只碰本机文件，不需要账号也不需要联网，唯一的前提是 `input/` 里得先有小册。
+- **掘金文章**几个列表接口都是公开的，不需要 Cookie。唯一的例外是私有收藏集，
+  那个得配一份 `JUEJIN_COOKIE` 才看得到。
 - **Chrome 书签**是明文 JSON，直接读，不需要调整任何系统权限。代价是书签横跨上千个
   站点，抓正文得靠 readability 式打分挑正文节点。
 - **微信收藏**最麻烦，库是 SQLCipher 加密的，要关 SIP、重签名微信、用 LLDB 断在
@@ -59,7 +67,8 @@ cd wechat-favorites-export && bash run.sh       # 需要先关 SIP 并重签名�
 [微信正文抓取](wechat-favorites-export/ARTICLES.md) ·
 [Chrome 书签](chrome-bookmarks-export/README.md) ·
 [Chrome 正文抓取](chrome-bookmarks-export/PAGES.md) ·
-[掘金](juejin-articles-export/README.md)
+[掘金文章](juejin-articles-export/README.md) ·
+[掘金小册](juejin-books-export/README.md)
 
 ## 产出长什么样
 
@@ -81,7 +90,7 @@ source_url: "http://mp.weixin.qq.com/s?..."
 
 ## 环境要求
 
-- macOS（微信管线依赖 macOS 的 LLDB 和微信客户端；另两条管线跨平台）
+- macOS（微信管线依赖 macOS 的 LLDB 和微信客户端；另三条管线跨平台）
 - Python 3，只用标准库，不需要 `pip install`
 
 ## 隐私
@@ -101,4 +110,5 @@ source_url: "http://mp.weixin.qq.com/s?..."
 仓库里的代码用 [MIT](LICENSE)。
 
 这只覆盖工具本身。脚本抓到 `output/` 里的内容版权属于原作者，留着自己用就好，别去
-再分发——那个目录被 `.gitignore` 忽略也正是这个原因。
+再分发——那个目录被 `.gitignore` 忽略也正是这个原因。小册是付费内容，
+`juejin-books-export/` 的 `input/` 和 `output/` 都被忽略，尤其别外传。

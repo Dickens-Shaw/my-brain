@@ -2,15 +2,16 @@
 
 English | [简体中文](README.zh-CN.md)
 
-Export WeChat favorites, Chrome bookmarks and Juejin liked posts into a local
-Markdown knowledge base. Local-only, stdlib-only Python, zero dependencies.
+Export WeChat favorites, Chrome bookmarks, Juejin liked posts / collections and
+Juejin booklets into a local Markdown knowledge base. Local-only, stdlib-only
+Python, zero dependencies.
 
 You've been saving things for years, but they're all locked inside someone
 else's app: not searchable, not backup-able, and gone the moment the account
 is. This repo pulls them back onto your disk as Markdown files you can grep or
 open in Obsidian / Logseq.
 
-## Three pipelines
+## Four pipelines
 
 Each subdirectory is a self-contained pipeline. They don't depend on each
 other, so run only the one you need.
@@ -19,19 +20,26 @@ other, so run only the one you need.
 |-----------|--------|-------------|---------------|
 | [wechat-favorites-export](wechat-favorites-export/) | The local WeChat favorites database `favorite.db` on macOS | `bash run.sh` | 3,396 favorites, 2,894 article bodies fetched |
 | [chrome-bookmarks-export](chrome-bookmarks-export/) | Chrome / Edge / Brave / Arc bookmark files | `bash run.sh` | 1,049 bookmarks after dedup, 606 page bodies fetched |
-| [juejin-articles-export](juejin-articles-export/) | Your "liked posts" on Juejin | `bash run.sh` | 647 posts, all fetched |
+| [juejin-articles-export](juejin-articles-export/) | Your "liked posts" and collection sets on Juejin | `bash run.sh` | 647 liked + 37 collected posts, all fetched |
+| [juejin-books-export](juejin-books-export/) | Juejin booklets you already have on disk | `bash run.sh` | 39 booklets / 829 chapters, 740 converted to Markdown |
 
-All three share one shape: distinct stages wired together by JSON, so any
+All four share one shape: distinct stages wired together by JSON, so any
 single stage can be re-run on its own.
 
 ```
 source ──→ index JSON/CSV/MD ──→ Markdown bodies ──→ categorized index / knowledge base
 ```
 
-Body fetching is resumable. Progress lives in `.fetch_state.json`; `Ctrl+C`
-saves before exiting, and the next run picks up where it stopped. Anything that
-couldn't be fetched is classified and written to `未抓取清单.md` ("not fetched"
-list) rather than silently dropped.
+The first three pipelines fetch over the network, and that's resumable.
+Progress lives in `.fetch_state.json`; `Ctrl+C` saves before exiting, and the
+next run picks up where it stopped. Anything that couldn't be fetched is
+classified and written to `未抓取清单.md` ("not fetched" list) rather than
+silently dropped.
+
+The booklet pipeline never goes online. Booklets aren't something an API hands
+you, so `input/` holds files you already collected and the pipeline just
+normalizes them locally: detect the format, recover chapter numbering, convert
+HTML to Markdown, and relocate images.
 
 ## Getting started
 
@@ -43,21 +51,26 @@ cp .env.example .env
 ```
 
 Only two fields matter: your Juejin user ID (needed to read the liked-posts
-list) and your WeChat account directory name (leave it empty if you've only
-ever signed into one WeChat account). All three `run.sh` scripts read the
+and collection-set lists) and your WeChat account directory name (leave it
+empty if you've only ever signed into one WeChat account). `JUEJIN_COOKIE` is
+optional and only needed for private collection sets. Every `run.sh` reads the
 repo-root `.env` on startup, and environment variables of the same name
 override it.
 
 ```bash
-cd juejin-articles-export && bash run.sh        # easiest: no permissions, no credentials
+cd juejin-books-export && bash run.sh           # fully local, no network, seconds
+cd juejin-articles-export && bash run.sh        # no permissions, no credentials
 cd chrome-bookmarks-export && FETCH=1 bash run.sh
 cd wechat-favorites-export && bash run.sh       # requires disabling SIP and re-signing WeChat first
 ```
 
-The three differ a lot in how much trouble they are:
+The four differ a lot in how much trouble they are:
 
-- **Juejin** is the easy one. The interaction-list endpoint is public, so no
-  cookies are needed.
+- **Juejin booklets** only touch local files: no account, no network. The one
+  prerequisite is having the booklets in `input/` to begin with.
+- **Juejin posts** are easy too. Every list endpoint is public, so no cookies
+  are needed — the one exception is a *private* collection set, which only shows
+  up when you pass `JUEJIN_COOKIE`.
 - **Chrome bookmarks** are a plaintext JSON file — just read it, no system
   permission changes at all. The cost shows up when fetching bodies: bookmarks
   span thousands of sites, so the fetcher uses readability-style scoring to
@@ -73,7 +86,8 @@ Details live in each pipeline's own docs (Chinese):
 [WeChat bodies](wechat-favorites-export/ARTICLES.md) ·
 [Chrome bookmarks](chrome-bookmarks-export/README.md) ·
 [Chrome page bodies](chrome-bookmarks-export/PAGES.md) ·
-[Juejin](juejin-articles-export/README.md)
+[Juejin posts](juejin-articles-export/README.md) ·
+[Juejin booklets](juejin-books-export/README.md)
 
 ## What the output looks like
 
@@ -97,7 +111,7 @@ moved, so re-categorizing never touches what you already fetched.
 ## Requirements
 
 - macOS (the WeChat pipeline needs macOS LLDB and the WeChat client; the other
-  two are cross-platform)
+  three are cross-platform)
 - Python 3, standard library only — no `pip install`
 
 ## Privacy
@@ -124,3 +138,5 @@ data.
 Note that this covers the tooling only. Anything the scripts fetch into
 `output/` remains the copyright of its original authors — keep it local, and
 don't redistribute it. That directory is gitignored for exactly this reason.
+Booklets are paid content, so both `input/` and `output/` under
+`juejin-books-export/` are ignored as well — be especially careful with those.

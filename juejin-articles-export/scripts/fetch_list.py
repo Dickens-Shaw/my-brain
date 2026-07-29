@@ -55,9 +55,15 @@ BASE_HEADERS = {
 ITEM_TYPE_NAMES = {2: "文章", 4: "沸点", 15: "视频"}
 
 
-def http_post(url: str, payload: dict, timeout: int = 25) -> dict:
+def http_post(
+    url: str,
+    payload: dict,
+    timeout: int = 25,
+    extra_headers: dict[str, str] | None = None,
+) -> dict:
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-    request = urllib.request.Request(url, data=body, headers=BASE_HEADERS, method="POST")
+    headers = {**BASE_HEADERS, **(extra_headers or {})}
+    request = urllib.request.Request(url, data=body, headers=headers, method="POST")
     with urllib.request.urlopen(request, timeout=timeout) as response:
         raw = response.read()
         encoding = (response.headers.get("Content-Encoding") or "").lower()
@@ -192,19 +198,24 @@ def write_json(records: list[dict], path: Path) -> None:
     path.write_text(json.dumps(records, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
-def write_csv(records: list[dict], path: Path) -> None:
-    columns = [
-        "rank", "id", "title", "url", "author", "category", "tags",
-        "publish_time", "view_count", "digg_count", "collect_count",
-        "comment_count", "read_time",
-    ]
+CSV_COLUMNS = [
+    "rank", "id", "title", "url", "author", "category", "tags",
+    "publish_time", "view_count", "digg_count", "collect_count",
+    "comment_count", "read_time",
+]
+
+
+def write_csv(records: list[dict], path: Path, columns: list[str] | None = None) -> None:
+    columns = columns or CSV_COLUMNS
     with path.open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(columns)
         for record in records:
-            writer.writerow(
-                [", ".join(record["tags"]) if key == "tags" else record.get(key, "") for key in columns]
-            )
+            row = []
+            for key in columns:
+                value = record.get(key, "")
+                row.append(", ".join(value) if isinstance(value, list) else value)
+            writer.writerow(row)
 
 
 def write_markdown(records: list[dict], path: Path, item_label: str, total: int) -> None:
@@ -239,13 +250,13 @@ def write_markdown(records: list[dict], path: Path, item_label: str, total: int)
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def default_user_id() -> str:
-    """按 环境变量 → 仓库根目录 .env → 本目录 .env 的顺序找用户 ID。
+def env_value(name: str) -> str:
+    """按 环境变量 → 仓库根目录 .env → 本目录 .env 的顺序取配置项。
 
     直接 python3 跑脚本时不会经过 run.sh 的 source，所以这里自己认一次 .env。
     解析只支持 KEY=VALUE、# 注释和可选的外层引号，够用了。
     """
-    from_env = os.environ.get("JUEJIN_USER_ID", "").strip()
+    from_env = os.environ.get(name, "").strip()
     if from_env:
         return from_env
 
@@ -258,11 +269,15 @@ def default_user_id() -> str:
             if not line or line.startswith("#") or "=" not in line:
                 continue
             key, _, raw = line.partition("=")
-            if key.strip() == "JUEJIN_USER_ID":
+            if key.strip() == name:
                 value = raw.strip().strip("\"'")
                 if value:
                     return value
     return ""
+
+
+def default_user_id() -> str:
+    return env_value("JUEJIN_USER_ID")
 
 
 def main() -> int:

@@ -25,6 +25,11 @@ chrome-bookmarks-export/.cache/
 juejin-articles-export/output/
 juejin-articles-export/*.json
 juejin-articles-export/.cache/
-juejinbook
+
+# 掘金小册：付费内容，原始文件和转换产物都只留在本地
+juejin-books-export/input/
+juejin-books-export/output/
+juejin-books-export/*.json
+
 # Cookie 配置等同于账号凭证
 *cookies*.json

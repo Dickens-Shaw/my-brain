@@ -610,10 +610,18 @@ def render_markdown(item: dict, body: str) -> str:
         [
             f'source_url: "{item["url"]}"',
             f'article_id: "{item["id"]}"',
-            f'digg_rank: {item.get("rank", 0)}',
-            f'fetched_at: "{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"',
         ]
     )
+    if item.get("collections"):
+        lines.append(
+            "collections: ["
+            + ", ".join(f'"{yaml_escape(name)}"' for name in item["collections"])
+            + "]"
+        )
+        lines.append(f'collection_rank: {item.get("rank", 0)}')
+    else:
+        lines.append(f'digg_rank: {item.get("rank", 0)}')
+    lines.append(f'fetched_at: "{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}"')
     if item.get("read_time"):
         lines.append(f'read_time: "{item["read_time"]}"')
     if item.get("brief"):
@@ -673,12 +681,19 @@ def year_of(item: dict) -> str:
     return (item.get("publish_time") or "")[:4] or "unknown"
 
 
+def subdir_of(item: dict, group_by: str) -> str:
+    if group_by == "collection":
+        return safe_filename(item.get("collection_name") or "未分组", 60)
+    return year_of(item)
+
+
 def process(
     item: dict,
     out_dir: Path,
     limiter: RateLimiter,
     want_images: bool,
     retries: int,
+    group_by: str = "year",
 ) -> dict:
     url = item["url"]
     last_error = ""
@@ -697,7 +712,7 @@ def process(
                 return {"status": STATUS_DEAD, "error": "页面里找不到正文"}
 
             body, images = parsed
-            folder = out_dir / year_of(item)
+            folder = out_dir / subdir_of(item, group_by)
             folder.mkdir(parents=True, exist_ok=True)
 
             date_prefix = (item.get("publish_time") or "")[:10] or "0000-00-00"
@@ -741,6 +756,12 @@ def main() -> int:
     parser.add_argument("--input", default="output/articles.json")
     parser.add_argument("--output", default="output/articles")
     parser.add_argument("--limit", type=int, default=0, help="只处理 N 条，0 表示全部")
+    parser.add_argument(
+        "--group-by",
+        choices=("year", "collection"),
+        default="year",
+        help="子目录按什么分：year 发布年份（默认），collection 所属收藏集",
+    )
     parser.add_argument("--workers", type=int, default=4, help="并发线程数")
     parser.add_argument("--interval", type=float, default=0.5, help="全局请求间隔秒数")
     parser.add_argument("--retries", type=int, default=2, help="失败重试次数")
@@ -750,6 +771,7 @@ def main() -> int:
     parser.add_argument("--since", default="", help="只抓这个发布日期之后的，例如 2020-01-01")
     parser.add_argument("--category", default="", help="只抓某个分类，例如 前端")
     parser.add_argument("--tag", default="", help="只抓带某个标签的，例如 React")
+    parser.add_argument("--collection", default="", help="只抓某个收藏集的，例如 前端工程化")
     args = parser.parse_args()
 
     base = Path(__file__).resolve().parent.parent
@@ -772,6 +794,8 @@ def main() -> int:
         targets = [t for t in targets if t.get("category") == args.category]
     if args.tag:
         targets = [t for t in targets if args.tag in (t.get("tags") or [])]
+    if args.collection:
+        targets = [t for t in targets if args.collection in (t.get("collections") or [])]
 
     pending = []
     for item in targets:
@@ -811,7 +835,15 @@ def main() -> int:
 
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futures = {
-            pool.submit(process, item, out_dir, limiter, args.download_images, args.retries): item
+            pool.submit(
+                process,
+                item,
+                out_dir,
+                limiter,
+                args.download_images,
+                args.retries,
+                args.group_by,
+            ): item
             for item in pending
         }
         try:
