@@ -2,34 +2,53 @@
 .test_tools/
 __pycache__/
 *.pyc
+.venv/
+venv/
 
 # 本机配置，含账号 ID 之类的个人标识；.env.example 是可提交的模板
 .env
 .env.*
 !.env.example
 
+# TypeScript monorepo
+node_modules/
+dist/
+*.tsbuildinfo
+.turbo/
+
+# 检索索引（可从 Vault 重建，永不入库）
+*.db
+*.db-*
+.data/
+index.db
+
+# 若有人把 Vault 目录误放进本仓库工作区
+/vault/
+/Vault/
+/my-brain-vault/
+
 # 微信收藏导出过程中的本地敏感/生成文件
-wechat-favorites-export/output/
-wechat-favorites-export/decrypted/
-wechat-favorites-export/*.json
-wechat-favorites-export/*.db
-wechat-favorites-export/*.db-*
-wechat-favorites-export/.cache/
+exporters/wechat-favorites/output/
+exporters/wechat-favorites/decrypted/
+exporters/wechat-favorites/*.json
+exporters/wechat-favorites/*.db
+exporters/wechat-favorites/*.db-*
+exporters/wechat-favorites/.cache/
 
 # Chrome 书签导出的本地生成文件
-chrome-bookmarks-export/output/
-chrome-bookmarks-export/*.json
-chrome-bookmarks-export/.cache/
+exporters/chrome-bookmarks/output/
+exporters/chrome-bookmarks/*.json
+exporters/chrome-bookmarks/.cache/
 
 # 掘金文章导出的本地生成文件
-juejin-articles-export/output/
-juejin-articles-export/*.json
-juejin-articles-export/.cache/
+exporters/juejin-articles/output/
+exporters/juejin-articles/*.json
+exporters/juejin-articles/.cache/
 
 # 掘金小册：付费内容，原始文件和转换产物都只留在本地
-juejin-books-export/input/
-juejin-books-export/output/
-juejin-books-export/*.json
+exporters/juejin-books/input/
+exporters/juejin-books/output/
+exporters/juejin-books/*.json
 
 # Cookie 配置等同于账号凭证
 *cookies*.json

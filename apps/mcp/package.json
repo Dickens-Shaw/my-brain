@@ -1,0 +1,21 @@
+{
+  "name": "@my-brain/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "my-brain-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@my-brain/config": "workspace:*",
+    "@my-brain/core": "workspace:*",
+    "@my-brain/retrieval": "workspace:*",
+    "@my-brain/vault": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.13.2"
+  }
+}

@@ -3,31 +3,52 @@
 English | [简体中文](README.zh-CN.md)
 
 Export WeChat favorites, Chrome bookmarks, Juejin liked posts / collections and
-Juejin booklets into a local Markdown knowledge base. Local-only, stdlib-only
-Python, zero dependencies.
+Juejin booklets to Markdown, migrate them into a private Obsidian Vault, and
+expose a rebuildable retrieval index through Cursor MCP.
 
-You've been saving things for years, but they're all locked inside someone
-else's app: not searchable, not backup-able, and gone the moment the account
-is. This repo pulls them back onto your disk as Markdown files you can grep or
-open in Obsidian / Logseq.
+You've been saving things for years, but they're locked inside someone else's
+app: not searchable, not backup-able, and gone the moment the account is. This
+repo pulls them back onto disk, then turns them into a knowledge base you can
+actually use while coding.
 
-## Four pipelines
+## Layout
+
+```
+exporters/          Python export pipelines (stdlib only)
+  wechat-favorites/
+  chrome-bookmarks/
+  juejin-articles/
+  juejin-books/
+packages/           TypeScript knowledge layer
+  core/             frontmatter schema, enums, id rules
+  config/           .env / VAULT_PATH
+  vault/            Vault I/O and validation
+  ingest/           one-shot migration pipeline
+  retrieval/        chunking, indexing, hybrid search
+apps/
+  mcp/              Cursor MCP Server (stdio)
+```
+
+The Vault (the notes themselves) lives in a **separate private repo**. This
+public repo only holds code and a `VAULT_PATH` config pointer.
+
+## Four exporters
 
 Each subdirectory is a self-contained pipeline. They don't depend on each
 other, so run only the one you need.
 
 | Directory | Source | Entry point | Actual output |
 |-----------|--------|-------------|---------------|
-| [wechat-favorites-export](wechat-favorites-export/) | The local WeChat favorites database `favorite.db` on macOS | `bash run.sh` | 3,396 favorites, 2,894 article bodies fetched |
-| [chrome-bookmarks-export](chrome-bookmarks-export/) | Chrome / Edge / Brave / Arc bookmark files | `bash run.sh` | 1,049 bookmarks after dedup, 606 page bodies fetched |
-| [juejin-articles-export](juejin-articles-export/) | Your "liked posts" and collection sets on Juejin | `bash run.sh` | 647 liked + 37 collected posts, all fetched |
-| [juejin-books-export](juejin-books-export/) | Juejin booklets you already have on disk | `bash run.sh` | 39 booklets / 829 chapters, 740 converted to Markdown |
+| [exporters/wechat-favorites](exporters/wechat-favorites/) | The local WeChat favorites database `favorite.db` on macOS | `bash run.sh` | 3,396 favorites, 2,894 article bodies fetched |
+| [exporters/chrome-bookmarks](exporters/chrome-bookmarks/) | Chrome / Edge / Brave / Arc bookmark files | `bash run.sh` | 1,049 bookmarks after dedup, 606 page bodies fetched |
+| [exporters/juejin-articles](exporters/juejin-articles/) | Your "liked posts" and collection sets on Juejin | `bash run.sh` | 647 liked + 37 collected posts, all fetched |
+| [exporters/juejin-books](exporters/juejin-books/) | Juejin booklets you already have on disk | `bash run.sh` | 39 booklets / 829 chapters, 740 converted to Markdown |
 
 All four share one shape: distinct stages wired together by JSON, so any
 single stage can be re-run on its own.
 
 ```
-source ──→ index JSON/CSV/MD ──→ Markdown bodies ──→ categorized index / knowledge base
+source ──→ index JSON/CSV/MD ──→ Markdown bodies ──→ (migrate) Vault / retrieval index
 ```
 
 The first three pipelines fetch over the network, and that's resumable.
@@ -43,100 +64,105 @@ HTML to Markdown, and relocate images.
 
 ## Getting started
 
-Fill in your machine-local config first. Real values stay on your disk —
-`.env` is gitignored:
+### 1. Config
 
 ```bash
 cp .env.example .env
 ```
 
-Only two fields matter: your Juejin user ID (needed to read the liked-posts
-and collection-set lists) and your WeChat account directory name (leave it
-empty if you've only ever signed into one WeChat account). `JUEJIN_COOKIE` is
-optional and only needed for private collection sets. Every `run.sh` reads the
-repo-root `.env` on startup, and environment variables of the same name
-override it.
+Fill in at least `JUEJIN_USER_ID`, `VAULT_PATH` (absolute path to the private
+Vault), and `OPENAI_API_KEY` when you want retrieval / classification.
+`WECHAT_ACCOUNT` is only needed if you have multiple WeChat accounts.
+
+### 2. Run exporters
 
 ```bash
-cd juejin-books-export && bash run.sh           # fully local, no network, seconds
-cd juejin-articles-export && bash run.sh        # no permissions, no credentials
-cd chrome-bookmarks-export && FETCH=1 bash run.sh
-cd wechat-favorites-export && bash run.sh       # requires disabling SIP and re-signing WeChat first
+cd exporters/juejin-books && bash run.sh           # fully local, no network, seconds
+cd exporters/juejin-articles && bash run.sh        # no permissions, no credentials
+cd exporters/chrome-bookmarks && FETCH=1 bash run.sh
+cd exporters/wechat-favorites && bash run.sh       # requires disabling SIP and re-signing WeChat first
 ```
 
-The four differ a lot in how much trouble they are:
+The four pipelines have very different barriers:
 
-- **Juejin booklets** only touch local files: no account, no network. The one
-  prerequisite is having the booklets in `input/` to begin with.
-- **Juejin posts** are easy too. Every list endpoint is public, so no cookies
-  are needed — the one exception is a *private* collection set, which only shows
-  up when you pass `JUEJIN_COOKIE`.
-- **Chrome bookmarks** are a plaintext JSON file — just read it, no system
-  permission changes at all. The cost shows up when fetching bodies: bookmarks
-  span thousands of sites, so the fetcher uses readability-style scoring to
-  pick the content node.
-- **WeChat favorites** is the painful one. The database is SQLCipher-encrypted,
-  so you have to disable SIP, re-sign WeChat, and break on
-  `CCKeyDerivationPBKDF` with LLDB to capture the passphrase. The upside is
-  that every page has the same structure, so locking onto `#js_content` yields
-  clean content.
+- **Juejin booklets** only touch local files — no account, no network. The only
+  prerequisite is that `input/` already has the booklets.
+- **Juejin posts** use public list APIs, no Cookie needed. The one exception is
+  private collection sets, which need `JUEJIN_COOKIE`.
+- **Chrome bookmarks** are plain JSON — no system permissions. The trade-off is
+  that bookmarks span thousands of sites, so body extraction relies on
+  readability-style scoring.
+- **WeChat favorites** are the hardest: the DB is SQLCipher-encrypted, so you
+  disable SIP, re-sign WeChat, and catch the passphrase with LLDB on
+  `CCKeyDerivationPBKDF`. The payoff is a uniform page structure — lock onto
+  `#js_content` and you get a clean body.
 
-Details live in each pipeline's own docs (Chinese):
-[WeChat](wechat-favorites-export/README.md) ·
-[WeChat bodies](wechat-favorites-export/ARTICLES.md) ·
-[Chrome bookmarks](chrome-bookmarks-export/README.md) ·
-[Chrome page bodies](chrome-bookmarks-export/PAGES.md) ·
-[Juejin posts](juejin-articles-export/README.md) ·
-[Juejin booklets](juejin-books-export/README.md)
+Details live in each pipeline's own README:
+[WeChat](exporters/wechat-favorites/README.md) ·
+[WeChat bodies](exporters/wechat-favorites/ARTICLES.md) ·
+[Chrome bookmarks](exporters/chrome-bookmarks/README.md) ·
+[Chrome page bodies](exporters/chrome-bookmarks/PAGES.md) ·
+[Juejin posts](exporters/juejin-articles/README.md) ·
+[Juejin booklets](exporters/juejin-books/README.md)
 
-## What the output looks like
+### 3. TypeScript knowledge layer
 
-Every article becomes one Markdown file with YAML frontmatter, filed by year,
-named `date-title.md`:
-
-```yaml
----
-title: "TypeScript 技巧：让代码库整洁 10 倍"
-account: "前端小石匠"
-publish_time: "2025-01-06 07:25:00"
-favorite_time: "2025-01-22T18:34:56"
-source_url: "http://mp.weixin.qq.com/s?..."
----
+```bash
+pnpm install
+pnpm vault:init                              # create Vault skeleton at VAULT_PATH
+pnpm vault:validate                          # validate frontmatter / broken image refs
+pnpm migrate --stage normalize               # migrate: normalize (then dedupe → embed → induce)
+# Review .data/migrate/topic-taxonomy.json and set status to confirmed
+pnpm migrate --stage classify
+pnpm migrate --stage write
+pnpm index                                   # build / incremental retrieval index (.data/index.db)
+pnpm search -- --query "Vite cold start"
+pnpm mcp                                     # Cursor MCP (stdio)
 ```
 
-On top of that, a categorized index is generated (`knowledge-base/`, `索引/`)
-with links pointing at the local files. The articles themselves are never
-moved, so re-categorizing never touches what you already fetched.
+Golden questions live in `eval/golden-questions.json`. Fill `expected_doc_ids` yourself from real coding questions, then run `pnpm eval`.
+
+Vault top-level layout:
+
+- Machine-maintained: `Inbox/`, `Library/`, `Books/`, `Maps/`
+- Handwritten: `Notes/`, `Projects/`, `Daily/`, `Templates/`
+- `Assets/` serves handwritten notes only; imported images live next to each
+  document under `assets/`
 
 ## Requirements
 
-- macOS (the WeChat pipeline needs macOS LLDB and the WeChat client; the other
-  three are cross-platform)
-- Python 3, standard library only — no `pip install`
+- macOS (WeChat pipeline needs macOS LLDB + the WeChat client; the other three
+  exporters are cross-platform)
+- Python 3 (exporters use stdlib only — no `pip install`)
+- Node.js ≥ 20 + pnpm (knowledge layer)
+- SQLite ≥ 3.34 (FTS5 `trigram` tokenizer for the retrieval index)
 
 ## Privacy
 
-These scripts touch your entire saving history. Treat the results as private
-data.
+These scripts handle your entire favorites history. Treat the output as private.
 
-- Local reads only. Nothing is uploaded, and neither the WeChat database nor
-  the browser's bookmark file is modified.
-- Personal identifiers such as account IDs live in `.env`; the repo only ships
-  the `.env.example` template.
-- `output/`, `.env`, `*.json`, `*.db` and `*cookies*.json` are all gitignored.
-  Still, check `git status` before committing — don't let exported content or
-  cookies into the repo. The `sessionid` inside a cookie string copied from
-  your browser is as good as your password.
-- The WeChat pipeline requires SIP to be off, which lowers the protection level
-  of macOS itself. Boot into recovery mode and run `csrutil enable` as soon as
-  you've captured the key.
+- Exporters are read-only against local data; they never modify the WeChat DB or
+  browser bookmark files.
+- **Raw data files are never uploaded** (databases, cookies, booklet `input/`).
+  The knowledge layer does send document bodies to cloud embedding / LLM APIs
+  for vectorization, classification, and retrieval — that is a prerequisite for
+  search.
+- Account IDs, cookies, and API keys live in `.env`; the repo only ships
+  `.env.example`.
+- All `exporters/*/output/`, booklet `input/`, `.env`, `*.db` indexes, and
+  `*cookies*.json` are gitignored. Check `git status` before committing.
+- Vault content is other people's copyrighted material and belongs in a
+  separate private repo — never push it into this public one.
+- The WeChat pipeline requires disabling SIP, which lowers macOS system
+  protections. After capturing the key, go back into Recovery and run
+  `csrutil enable`.
 
 ## License
 
-[MIT](LICENSE) for the code in this repository.
+Code in this repo is [MIT](LICENSE).
 
-Note that this covers the tooling only. Anything the scripts fetch into
-`output/` remains the copyright of its original authors — keep it local, and
-don't redistribute it. That directory is gitignored for exactly this reason.
-Booklets are paid content, so both `input/` and `output/` under
-`juejin-books-export/` are ignored as well — be especially careful with those.
+That covers the tools only. Anything the scripts write under `output/` belongs
+to the original authors — keep it for personal use, don't redistribute. Those
+directories are gitignored for that reason. Booklets are paid content;
+`exporters/juejin-books/` `input/` and `output/` are ignored — be especially
+careful not to share them.

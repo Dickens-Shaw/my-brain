@@ -1,0 +1,103 @@
+[
+  {
+    "id": "gq-01",
+    "query": "REPLACE_ME: a real question you would ask while coding",
+    "expected_doc_ids": [],
+    "notes": "Fill with your own queries BEFORE relying on eval scores. Do not invent from the corpus."
+  },
+  {
+    "id": "gq-02",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-03",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-04",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-05",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-06",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-07",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-08",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-09",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-10",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-11",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-12",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-13",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-14",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-15",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-16",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-17",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-18",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-19",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  },
+  {
+    "id": "gq-20",
+    "query": "REPLACE_ME",
+    "expected_doc_ids": []
+  }
+]

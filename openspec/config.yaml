@@ -1,0 +1,29 @@
+schema: spec-driven
+
+context: |
+  项目：my-brain，把微信收藏、Chrome 书签、掘金点赞/收藏集、掘金小册导出为本地
+  Markdown，再迁移进独立私有 Obsidian Vault，并提供可重建的检索索引与 Cursor MCP。
+
+  仓库是 pnpm monorepo：
+  - exporters/<name>/ —— 四条 Python 导出线（标准库零依赖），入口 bash run.sh
+  - packages/{core,config,vault,ingest,retrieval} —— TypeScript 知识层
+  - apps/mcp —— MCP Server（stdio）
+  不建 apps/api（后续 admin-console change）。
+
+  四条导出线：exporters/wechat-favorites、exporters/chrome-bookmarks、
+  exporters/juejin-articles、exporters/juejin-books。互相独立，可单独运行。
+
+  管线约定：分阶段执行，阶段之间用 JSON 衔接，任何一步都能单独重跑；联网抓取的三条
+  支持断点续传，进度写在 .fetch_state.json，Ctrl+C 先存盘再退出；抓不到的条目写进
+  未抓取清单.md，不静默丢弃。
+
+  Vault 是唯一事实来源（独立私有仓库，路径由 VAULT_PATH 配置）：
+  机器维护区 Inbox/ Library/ Books/ Maps/；手写区 Notes/ Projects/ Daily/ Templates/。
+  索引层（SQLite vec0+FTS5）可随时删除重建。
+
+  约束：
+  - exporters/ 只读本机数据，不修改微信数据库和浏览器书签文件，不引入 pip 依赖
+  - TypeScript 层可使用 npm 依赖；正文会发送给云端 embedding/LLM，但不上传原始数据文件
+  - 账号 ID、Cookie、API Key 只放在根目录 .env（已忽略），仓库里只留 .env.example
+  - 所有 exporters/*/output/、小册 input/、*.db 索引都被 gitignore
+  - 微信管线依赖 macOS 的 LLDB 和微信客户端

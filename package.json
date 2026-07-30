@@ -1,0 +1,30 @@
+{
+  "name": "my-brain",
+  "private": true,
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "pnpm -r run build",
+    "typecheck": "pnpm -r run typecheck",
+    "vault:init": "pnpm --filter @my-brain/vault exec tsx src/cli/init.ts",
+    "vault:validate": "pnpm --filter @my-brain/vault exec tsx src/cli/validate.ts",
+    "migrate": "pnpm --filter @my-brain/ingest exec tsx src/cli/migrate.ts --",
+    "index": "pnpm --filter @my-brain/retrieval exec tsx src/cli/index.ts --",
+    "search": "pnpm --filter @my-brain/retrieval exec tsx src/cli/search.ts --",
+    "eval": "pnpm --filter @my-brain/retrieval exec tsx src/cli/eval.ts --",
+    "mcp": "pnpm --filter @my-brain/mcp start"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "tsx": "^4.20.3",
+    "@types/node": "^22.15.30"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
+  }
+}
