@@ -1,0 +1,626 @@
+{
+  "scriptCompleted": true,
+  "files": [
+    {
+      "path": ".env.example",
+      "language": "config",
+      "sizeLines": 78,
+      "fileCategory": "config"
+    },
+    {
+      "path": "apps/mcp/package.json",
+      "language": "json",
+      "sizeLines": 21,
+      "fileCategory": "config"
+    },
+    {
+      "path": "apps/mcp/README.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "apps/mcp/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 229,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/mcp/tsconfig.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": "eval/golden-questions.json",
+      "language": "json",
+      "sizeLines": 103,
+      "fileCategory": "config"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/PAGES.md",
+      "language": "markdown",
+      "sizeLines": 124,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/README.md",
+      "language": "markdown",
+      "sizeLines": 129,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/run.sh",
+      "language": "shell",
+      "sizeLines": 49,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/scripts/build_knowledge_base.py",
+      "language": "python",
+      "sizeLines": 586,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/scripts/extract_bookmarks.py",
+      "language": "python",
+      "sizeLines": 513,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/scripts/fetch_pages.py",
+      "language": "python",
+      "sizeLines": 1357,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-articles/README.md",
+      "language": "markdown",
+      "sizeLines": 231,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/juejin-articles/run.sh",
+      "language": "shell",
+      "sizeLines": 94,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/juejin-articles/scripts/fetch_articles.py",
+      "language": "python",
+      "sizeLines": 917,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-articles/scripts/fetch_collections.py",
+      "language": "python",
+      "sizeLines": 289,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-articles/scripts/fetch_list.py",
+      "language": "python",
+      "sizeLines": 341,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-books/README.md",
+      "language": "markdown",
+      "sizeLines": 214,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/juejin-books/run.sh",
+      "language": "shell",
+      "sizeLines": 57,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/juejin-books/scripts/build_books.py",
+      "language": "python",
+      "sizeLines": 547,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-books/scripts/html_to_markdown.py",
+      "language": "python",
+      "sizeLines": 440,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-books/scripts/scan_books.py",
+      "language": "python",
+      "sizeLines": 392,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/ARTICLES.md",
+      "language": "markdown",
+      "sizeLines": 108,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/wechat-favorites/AUDIO.md",
+      "language": "markdown",
+      "sizeLines": 248,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/wechat-favorites/README.md",
+      "language": "markdown",
+      "sizeLines": 147,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/wechat-favorites/run.sh",
+      "language": "shell",
+      "sizeLines": 38,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/build_article_index.py",
+      "language": "python",
+      "sizeLines": 226,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/build_knowledge_base.py",
+      "language": "python",
+      "sizeLines": 493,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/extract_favorite_audio.py",
+      "language": "python",
+      "sizeLines": 691,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/extract_favorites.py",
+      "language": "python",
+      "sizeLines": 706,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/fetch_articles.py",
+      "language": "python",
+      "sizeLines": 730,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/resign_wechat.sh",
+      "language": "shell",
+      "sizeLines": 54,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/watch_note_cache.py",
+      "language": "python",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/design.md",
+      "language": "markdown",
+      "sizeLines": 222,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/proposal.md",
+      "language": "markdown",
+      "sizeLines": 56,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/knowledge-migration/spec.md",
+      "language": "markdown",
+      "sizeLines": 97,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/mcp-server/spec.md",
+      "language": "markdown",
+      "sizeLines": 62,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/monorepo-workspace/spec.md",
+      "language": "markdown",
+      "sizeLines": 63,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/retrieval-index/spec.md",
+      "language": "markdown",
+      "sizeLines": 178,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/vault-schema/spec.md",
+      "language": "markdown",
+      "sizeLines": 141,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/tasks.md",
+      "language": "markdown",
+      "sizeLines": 50,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/config.yaml",
+      "language": "yaml",
+      "sizeLines": 29,
+      "fileCategory": "config"
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "sizeLines": 30,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/config/package.json",
+      "language": "json",
+      "sizeLines": 23,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/config/src/load.ts",
+      "language": "typescript",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/config/tsconfig.json",
+      "language": "json",
+      "sizeLines": 9,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/core/package.json",
+      "language": "json",
+      "sizeLines": 22,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/core/src/embedding.ts",
+      "language": "typescript",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/core/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/core/src/schema.ts",
+      "language": "typescript",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/core/tsconfig.json",
+      "language": "json",
+      "sizeLines": 9,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/ingest/package.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/ingest/src/classify.ts",
+      "language": "typescript",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/cli/migrate.ts",
+      "language": "typescript",
+      "sizeLines": 191,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/dedupe.ts",
+      "language": "typescript",
+      "sizeLines": 79,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/embed-docs.ts",
+      "language": "typescript",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/fsutil.ts",
+      "language": "typescript",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/kmeans.ts",
+      "language": "typescript",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/assign-ids.ts",
+      "language": "typescript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/index.ts",
+      "language": "typescript",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/parse.ts",
+      "language": "typescript",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/sources.ts",
+      "language": "typescript",
+      "sizeLines": 227,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/openai.ts",
+      "language": "typescript",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/outline.ts",
+      "language": "typescript",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/paths.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/topics.ts",
+      "language": "typescript",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/types.ts",
+      "language": "typescript",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/url.ts",
+      "language": "typescript",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/write-vault.ts",
+      "language": "typescript",
+      "sizeLines": 166,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/tsconfig.json",
+      "language": "json",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/retrieval/package.json",
+      "language": "json",
+      "sizeLines": 38,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/retrieval/src/build-index.ts",
+      "language": "typescript",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/chunker.ts",
+      "language": "typescript",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/eval.ts",
+      "language": "typescript",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/index.ts",
+      "language": "typescript",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/search.ts",
+      "language": "typescript",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/embedder.ts",
+      "language": "typescript",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/rrf.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/scan.ts",
+      "language": "typescript",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/search.ts",
+      "language": "typescript",
+      "sizeLines": 104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/sqlite-store.ts",
+      "language": "typescript",
+      "sizeLines": 564,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/types.ts",
+      "language": "typescript",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/tsconfig.json",
+      "language": "json",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/vault/package.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/vault/src/cli/init.ts",
+      "language": "typescript",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/cli/validate.ts",
+      "language": "typescript",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/documents.ts",
+      "language": "typescript",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/frontmatter.ts",
+      "language": "typescript",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/paths.ts",
+      "language": "typescript",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/skeleton.ts",
+      "language": "typescript",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/tsconfig.json",
+      "language": "json",
+      "sizeLines": 13,
+      "fileCategory": "config"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "language": "yaml",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 274,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "language": "markdown",
+      "sizeLines": 220,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "language": "json",
+      "sizeLines": 19,
+      "fileCategory": "config"
+    }
+  ],
+  "totalFiles": 100,
+  "filteredByIgnore": 7,
+  "estimatedComplexity": "moderate",
+  "stats": {
+    "filesScanned": 100,
+    "byCategory": {
+      "config": 19,
+      "docs": 18,
+      "code": 58,
+      "script": 5
+    },
+    "byLanguage": {
+      "config": 1,
+      "json": 15,
+      "markdown": 18,
+      "typescript": 43,
+      "shell": 5,
+      "python": 15,
+      "yaml": 3
+    }
+  }
+}

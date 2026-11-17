@@ -1,0 +1,875 @@
+{
+  "name": "my-brain",
+  "description": "将微信收藏、Chrome 书签、掘金点赞/收藏与小册导出为 Markdown，迁移进私有 Obsidian Vault，并通过 Cursor MCP 暴露可重建的检索索引。仓库由 Python 标准库编写的导出管线（exporters/）与 TypeScript 知识层（packages/、apps/mcp/）组成，Vault 笔记本体存放在独立的私有仓库。",
+  "languages": [
+    "json",
+    "markdown",
+    "python",
+    "shell",
+    "typescript",
+    "yaml"
+  ],
+  "frameworks": [
+    "TypeScript",
+    "better-sqlite3",
+    "sqlite-vec",
+    "zod",
+    "OpenAI",
+    "remark",
+    "MCP SDK",
+    "Python (stdlib)"
+  ],
+  "files": [
+    {
+      "path": ".env.example",
+      "language": "config",
+      "sizeLines": 78,
+      "fileCategory": "config"
+    },
+    {
+      "path": "apps/mcp/package.json",
+      "language": "json",
+      "sizeLines": 21,
+      "fileCategory": "config"
+    },
+    {
+      "path": "apps/mcp/README.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "apps/mcp/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 229,
+      "fileCategory": "code"
+    },
+    {
+      "path": "apps/mcp/tsconfig.json",
+      "language": "json",
+      "sizeLines": 15,
+      "fileCategory": "config"
+    },
+    {
+      "path": "eval/golden-questions.json",
+      "language": "json",
+      "sizeLines": 103,
+      "fileCategory": "config"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/PAGES.md",
+      "language": "markdown",
+      "sizeLines": 124,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/README.md",
+      "language": "markdown",
+      "sizeLines": 129,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/run.sh",
+      "language": "shell",
+      "sizeLines": 49,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/scripts/build_knowledge_base.py",
+      "language": "python",
+      "sizeLines": 586,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/scripts/extract_bookmarks.py",
+      "language": "python",
+      "sizeLines": 513,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/chrome-bookmarks/scripts/fetch_pages.py",
+      "language": "python",
+      "sizeLines": 1357,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-articles/README.md",
+      "language": "markdown",
+      "sizeLines": 231,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/juejin-articles/run.sh",
+      "language": "shell",
+      "sizeLines": 94,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/juejin-articles/scripts/fetch_articles.py",
+      "language": "python",
+      "sizeLines": 917,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-articles/scripts/fetch_collections.py",
+      "language": "python",
+      "sizeLines": 289,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-articles/scripts/fetch_list.py",
+      "language": "python",
+      "sizeLines": 341,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-books/README.md",
+      "language": "markdown",
+      "sizeLines": 214,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/juejin-books/run.sh",
+      "language": "shell",
+      "sizeLines": 57,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/juejin-books/scripts/build_books.py",
+      "language": "python",
+      "sizeLines": 547,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-books/scripts/html_to_markdown.py",
+      "language": "python",
+      "sizeLines": 440,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/juejin-books/scripts/scan_books.py",
+      "language": "python",
+      "sizeLines": 392,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/ARTICLES.md",
+      "language": "markdown",
+      "sizeLines": 108,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/wechat-favorites/AUDIO.md",
+      "language": "markdown",
+      "sizeLines": 248,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/wechat-favorites/README.md",
+      "language": "markdown",
+      "sizeLines": 147,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "exporters/wechat-favorites/run.sh",
+      "language": "shell",
+      "sizeLines": 38,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/build_article_index.py",
+      "language": "python",
+      "sizeLines": 226,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/build_knowledge_base.py",
+      "language": "python",
+      "sizeLines": 493,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/extract_favorite_audio.py",
+      "language": "python",
+      "sizeLines": 691,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/extract_favorites.py",
+      "language": "python",
+      "sizeLines": 706,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/fetch_articles.py",
+      "language": "python",
+      "sizeLines": 730,
+      "fileCategory": "code"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/resign_wechat.sh",
+      "language": "shell",
+      "sizeLines": 54,
+      "fileCategory": "script"
+    },
+    {
+      "path": "exporters/wechat-favorites/scripts/watch_note_cache.py",
+      "language": "python",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/design.md",
+      "language": "markdown",
+      "sizeLines": 222,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/proposal.md",
+      "language": "markdown",
+      "sizeLines": 56,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/knowledge-migration/spec.md",
+      "language": "markdown",
+      "sizeLines": 97,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/mcp-server/spec.md",
+      "language": "markdown",
+      "sizeLines": 62,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/monorepo-workspace/spec.md",
+      "language": "markdown",
+      "sizeLines": 63,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/retrieval-index/spec.md",
+      "language": "markdown",
+      "sizeLines": 178,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/specs/vault-schema/spec.md",
+      "language": "markdown",
+      "sizeLines": 141,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/tasks.md",
+      "language": "markdown",
+      "sizeLines": 50,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/config.yaml",
+      "language": "yaml",
+      "sizeLines": 29,
+      "fileCategory": "config"
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "sizeLines": 30,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/config/package.json",
+      "language": "json",
+      "sizeLines": 23,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/config/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/config/src/load.ts",
+      "language": "typescript",
+      "sizeLines": 87,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/config/tsconfig.json",
+      "language": "json",
+      "sizeLines": 9,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/core/package.json",
+      "language": "json",
+      "sizeLines": 22,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/core/src/embedding.ts",
+      "language": "typescript",
+      "sizeLines": 29,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/core/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/core/src/schema.ts",
+      "language": "typescript",
+      "sizeLines": 89,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/core/tsconfig.json",
+      "language": "json",
+      "sizeLines": 9,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/ingest/package.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/ingest/src/classify.ts",
+      "language": "typescript",
+      "sizeLines": 177,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/cli/migrate.ts",
+      "language": "typescript",
+      "sizeLines": 191,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/dedupe.ts",
+      "language": "typescript",
+      "sizeLines": 79,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/embed-docs.ts",
+      "language": "typescript",
+      "sizeLines": 71,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/fsutil.ts",
+      "language": "typescript",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/kmeans.ts",
+      "language": "typescript",
+      "sizeLines": 107,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/assign-ids.ts",
+      "language": "typescript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/index.ts",
+      "language": "typescript",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/parse.ts",
+      "language": "typescript",
+      "sizeLines": 62,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/normalize/sources.ts",
+      "language": "typescript",
+      "sizeLines": 227,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/openai.ts",
+      "language": "typescript",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/outline.ts",
+      "language": "typescript",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/paths.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/topics.ts",
+      "language": "typescript",
+      "sizeLines": 139,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/types.ts",
+      "language": "typescript",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/url.ts",
+      "language": "typescript",
+      "sizeLines": 51,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/src/write-vault.ts",
+      "language": "typescript",
+      "sizeLines": 166,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/ingest/tsconfig.json",
+      "language": "json",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/retrieval/package.json",
+      "language": "json",
+      "sizeLines": 38,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/retrieval/src/build-index.ts",
+      "language": "typescript",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/chunker.ts",
+      "language": "typescript",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/eval.ts",
+      "language": "typescript",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/index.ts",
+      "language": "typescript",
+      "sizeLines": 27,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/search.ts",
+      "language": "typescript",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/embedder.ts",
+      "language": "typescript",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/rrf.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/scan.ts",
+      "language": "typescript",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/search.ts",
+      "language": "typescript",
+      "sizeLines": 104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/sqlite-store.ts",
+      "language": "typescript",
+      "sizeLines": 564,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/types.ts",
+      "language": "typescript",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/tsconfig.json",
+      "language": "json",
+      "sizeLines": 14,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/vault/package.json",
+      "language": "json",
+      "sizeLines": 25,
+      "fileCategory": "config"
+    },
+    {
+      "path": "packages/vault/src/cli/init.ts",
+      "language": "typescript",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/cli/validate.ts",
+      "language": "typescript",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/documents.ts",
+      "language": "typescript",
+      "sizeLines": 117,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/frontmatter.ts",
+      "language": "typescript",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/paths.ts",
+      "language": "typescript",
+      "sizeLines": 31,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/src/skeleton.ts",
+      "language": "typescript",
+      "sizeLines": 35,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/vault/tsconfig.json",
+      "language": "json",
+      "sizeLines": 13,
+      "fileCategory": "config"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "language": "yaml",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 274,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "language": "markdown",
+      "sizeLines": 220,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "language": "json",
+      "sizeLines": 19,
+      "fileCategory": "config"
+    }
+  ],
+  "totalFiles": 100,
+  "filteredByIgnore": 7,
+  "estimatedComplexity": "moderate",
+  "importMap": {
+    ".env.example": [],
+    "apps/mcp/package.json": [],
+    "apps/mcp/README.md": [],
+    "apps/mcp/src/index.ts": [
+      "packages/config/src/index.ts",
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/index.ts"
+    ],
+    "apps/mcp/tsconfig.json": [],
+    "eval/golden-questions.json": [],
+    "exporters/chrome-bookmarks/PAGES.md": [],
+    "exporters/chrome-bookmarks/README.md": [],
+    "exporters/chrome-bookmarks/run.sh": [],
+    "exporters/chrome-bookmarks/scripts/build_knowledge_base.py": [],
+    "exporters/chrome-bookmarks/scripts/extract_bookmarks.py": [],
+    "exporters/chrome-bookmarks/scripts/fetch_pages.py": [],
+    "exporters/juejin-articles/README.md": [],
+    "exporters/juejin-articles/run.sh": [],
+    "exporters/juejin-articles/scripts/fetch_articles.py": [],
+    "exporters/juejin-articles/scripts/fetch_collections.py": [
+      "exporters/juejin-articles/scripts/fetch_list.py"
+    ],
+    "exporters/juejin-articles/scripts/fetch_list.py": [],
+    "exporters/juejin-books/README.md": [],
+    "exporters/juejin-books/run.sh": [],
+    "exporters/juejin-books/scripts/build_books.py": [
+      "exporters/juejin-books/scripts/html_to_markdown.py"
+    ],
+    "exporters/juejin-books/scripts/html_to_markdown.py": [],
+    "exporters/juejin-books/scripts/scan_books.py": [],
+    "exporters/wechat-favorites/ARTICLES.md": [],
+    "exporters/wechat-favorites/AUDIO.md": [],
+    "exporters/wechat-favorites/README.md": [],
+    "exporters/wechat-favorites/run.sh": [],
+    "exporters/wechat-favorites/scripts/build_article_index.py": [
+      "exporters/wechat-favorites/scripts/build_knowledge_base.py"
+    ],
+    "exporters/wechat-favorites/scripts/build_knowledge_base.py": [],
+    "exporters/wechat-favorites/scripts/extract_favorite_audio.py": [
+      "exporters/wechat-favorites/scripts/extract_favorites.py"
+    ],
+    "exporters/wechat-favorites/scripts/extract_favorites.py": [],
+    "exporters/wechat-favorites/scripts/fetch_articles.py": [],
+    "exporters/wechat-favorites/scripts/resign_wechat.sh": [],
+    "exporters/wechat-favorites/scripts/watch_note_cache.py": [],
+    "openspec/changes/knowledge-os-foundation/.openspec.yaml": [],
+    "openspec/changes/knowledge-os-foundation/design.md": [],
+    "openspec/changes/knowledge-os-foundation/proposal.md": [],
+    "openspec/changes/knowledge-os-foundation/specs/knowledge-migration/spec.md": [],
+    "openspec/changes/knowledge-os-foundation/specs/mcp-server/spec.md": [],
+    "openspec/changes/knowledge-os-foundation/specs/monorepo-workspace/spec.md": [],
+    "openspec/changes/knowledge-os-foundation/specs/retrieval-index/spec.md": [],
+    "openspec/changes/knowledge-os-foundation/specs/vault-schema/spec.md": [],
+    "openspec/changes/knowledge-os-foundation/tasks.md": [],
+    "openspec/config.yaml": [],
+    "package.json": [],
+    "packages/config/package.json": [],
+    "packages/config/src/index.ts": [
+      "packages/config/src/load.ts"
+    ],
+    "packages/config/src/load.ts": [],
+    "packages/config/tsconfig.json": [],
+    "packages/core/package.json": [],
+    "packages/core/src/embedding.ts": [],
+    "packages/core/src/index.ts": [
+      "packages/core/src/embedding.ts",
+      "packages/core/src/schema.ts"
+    ],
+    "packages/core/src/schema.ts": [],
+    "packages/core/tsconfig.json": [],
+    "packages/ingest/package.json": [],
+    "packages/ingest/src/classify.ts": [
+      "packages/config/src/index.ts",
+      "packages/ingest/src/embed-docs.ts",
+      "packages/ingest/src/fsutil.ts",
+      "packages/ingest/src/kmeans.ts",
+      "packages/ingest/src/openai.ts",
+      "packages/ingest/src/topics.ts",
+      "packages/ingest/src/types.ts"
+    ],
+    "packages/ingest/src/cli/migrate.ts": [
+      "packages/config/src/index.ts",
+      "packages/ingest/src/classify.ts",
+      "packages/ingest/src/dedupe.ts",
+      "packages/ingest/src/embed-docs.ts",
+      "packages/ingest/src/fsutil.ts",
+      "packages/ingest/src/normalize/index.ts",
+      "packages/ingest/src/paths.ts",
+      "packages/ingest/src/topics.ts",
+      "packages/ingest/src/types.ts",
+      "packages/ingest/src/write-vault.ts"
+    ],
+    "packages/ingest/src/dedupe.ts": [
+      "packages/ingest/src/types.ts",
+      "packages/ingest/src/url.ts"
+    ],
+    "packages/ingest/src/embed-docs.ts": [
+      "packages/config/src/index.ts",
+      "packages/ingest/src/fsutil.ts",
+      "packages/ingest/src/openai.ts",
+      "packages/ingest/src/outline.ts",
+      "packages/ingest/src/types.ts"
+    ],
+    "packages/ingest/src/fsutil.ts": [],
+    "packages/ingest/src/index.ts": [
+      "packages/ingest/src/dedupe.ts",
+      "packages/ingest/src/normalize/index.ts",
+      "packages/ingest/src/types.ts",
+      "packages/ingest/src/url.ts"
+    ],
+    "packages/ingest/src/kmeans.ts": [],
+    "packages/ingest/src/normalize/assign-ids.ts": [
+      "packages/core/src/index.ts",
+      "packages/ingest/src/types.ts"
+    ],
+    "packages/ingest/src/normalize/index.ts": [
+      "packages/ingest/src/normalize/sources.ts",
+      "packages/ingest/src/types.ts"
+    ],
+    "packages/ingest/src/normalize/parse.ts": [
+      "packages/ingest/src/fsutil.ts"
+    ],
+    "packages/ingest/src/normalize/sources.ts": [
+      "packages/ingest/src/fsutil.ts",
+      "packages/ingest/src/normalize/assign-ids.ts",
+      "packages/ingest/src/normalize/parse.ts",
+      "packages/ingest/src/paths.ts",
+      "packages/ingest/src/types.ts"
+    ],
+    "packages/ingest/src/openai.ts": [
+      "packages/core/src/index.ts"
+    ],
+    "packages/ingest/src/outline.ts": [],
+    "packages/ingest/src/paths.ts": [],
+    "packages/ingest/src/topics.ts": [
+      "packages/config/src/index.ts",
+      "packages/ingest/src/embed-docs.ts",
+      "packages/ingest/src/fsutil.ts",
+      "packages/ingest/src/kmeans.ts",
+      "packages/ingest/src/openai.ts",
+      "packages/ingest/src/types.ts"
+    ],
+    "packages/ingest/src/types.ts": [
+      "packages/core/src/index.ts"
+    ],
+    "packages/ingest/src/url.ts": [],
+    "packages/ingest/src/write-vault.ts": [
+      "packages/ingest/src/fsutil.ts",
+      "packages/ingest/src/types.ts",
+      "packages/vault/src/index.ts"
+    ],
+    "packages/ingest/tsconfig.json": [],
+    "packages/retrieval/package.json": [],
+    "packages/retrieval/src/build-index.ts": [
+      "packages/config/src/index.ts",
+      "packages/retrieval/src/chunker.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/scan.ts",
+      "packages/retrieval/src/sqlite-store.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/chunker.ts": [
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/cli/eval.ts": [
+      "packages/config/src/index.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/search.ts",
+      "packages/retrieval/src/sqlite-store.ts"
+    ],
+    "packages/retrieval/src/cli/index.ts": [
+      "packages/config/src/index.ts",
+      "packages/retrieval/src/build-index.ts"
+    ],
+    "packages/retrieval/src/cli/search.ts": [
+      "packages/config/src/index.ts",
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/search.ts",
+      "packages/retrieval/src/sqlite-store.ts"
+    ],
+    "packages/retrieval/src/embedder.ts": [
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/index.ts": [
+      "packages/retrieval/src/build-index.ts",
+      "packages/retrieval/src/chunker.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/rrf.ts",
+      "packages/retrieval/src/scan.ts",
+      "packages/retrieval/src/search.ts",
+      "packages/retrieval/src/sqlite-store.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/rrf.ts": [],
+    "packages/retrieval/src/scan.ts": [
+      "packages/core/src/index.ts",
+      "packages/vault/src/index.ts"
+    ],
+    "packages/retrieval/src/search.ts": [
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/rrf.ts",
+      "packages/retrieval/src/sqlite-store.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/sqlite-store.ts": [],
+    "packages/retrieval/src/types.ts": [
+      "packages/core/src/index.ts"
+    ],
+    "packages/retrieval/tsconfig.json": [],
+    "packages/vault/package.json": [],
+    "packages/vault/src/cli/init.ts": [
+      "packages/config/src/index.ts",
+      "packages/vault/src/skeleton.ts"
+    ],
+    "packages/vault/src/cli/validate.ts": [
+      "packages/config/src/index.ts",
+      "packages/core/src/index.ts",
+      "packages/vault/src/frontmatter.ts",
+      "packages/vault/src/paths.ts"
+    ],
+    "packages/vault/src/documents.ts": [
+      "packages/core/src/index.ts",
+      "packages/vault/src/frontmatter.ts",
+      "packages/vault/src/paths.ts"
+    ],
+    "packages/vault/src/frontmatter.ts": [
+      "packages/core/src/index.ts"
+    ],
+    "packages/vault/src/index.ts": [
+      "packages/vault/src/documents.ts",
+      "packages/vault/src/frontmatter.ts",
+      "packages/vault/src/paths.ts",
+      "packages/vault/src/skeleton.ts"
+    ],
+    "packages/vault/src/paths.ts": [
+      "packages/core/src/index.ts"
+    ],
+    "packages/vault/src/skeleton.ts": [],
+    "packages/vault/tsconfig.json": [],
+    "pnpm-workspace.yaml": [],
+    "README.md": [],
+    "README.zh-CN.md": [],
+    "tsconfig.base.json": []
+  }
+}

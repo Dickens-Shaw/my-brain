@@ -1,0 +1,300 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 6,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": ".env.example",
+      "language": "config",
+      "fileCategory": "config",
+      "totalLines": 78,
+      "nonEmptyLines": 66,
+      "definitions": [
+        {
+          "name": "VAULT_PATH",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 15,
+          "endLine": 15
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 21,
+          "endLine": 21
+        },
+        {
+          "name": "JUEJIN_USER_ID",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 50,
+          "endLine": 50
+        },
+        {
+          "name": "JUEJIN_COOKIE",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 57,
+          "endLine": 57
+        },
+        {
+          "name": "WECHAT_ACCOUNT",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 64,
+          "endLine": 64
+        },
+        {
+          "name": "BROWSER",
+          "kind": "variable",
+          "fields": [],
+          "startLine": 68,
+          "endLine": 68
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "definitionCount": 6
+      }
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 274,
+      "nonEmptyLines": 220,
+      "sections": [
+        {
+          "heading": "my-brain",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Layout",
+          "level": 2,
+          "line": 22
+        },
+        {
+          "heading": "Four exporters",
+          "level": 2,
+          "line": 52
+        },
+        {
+          "heading": "Getting started",
+          "level": 2,
+          "line": 82
+        },
+        {
+          "heading": "1. Config",
+          "level": 3,
+          "line": 84
+        },
+        {
+          "heading": "2. Run exporters",
+          "level": 3,
+          "line": 115
+        },
+        {
+          "heading": "3. TypeScript knowledge layer",
+          "level": 3,
+          "line": 146
+        },
+        {
+          "heading": "Roadmap",
+          "level": 2,
+          "line": 194
+        },
+        {
+          "heading": "Requirements",
+          "level": 2,
+          "line": 232
+        },
+        {
+          "heading": "Privacy",
+          "level": 2,
+          "line": 246
+        },
+        {
+          "heading": "License",
+          "level": 2,
+          "line": 266
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 11
+      }
+    },
+    {
+      "path": "README.zh-CN.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 220,
+      "nonEmptyLines": 166,
+      "sections": [
+        {
+          "heading": "my-brain",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "仓库布局",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "四条导出线",
+          "level": 2,
+          "line": 43
+        },
+        {
+          "heading": "快速开始",
+          "level": 2,
+          "line": 66
+        },
+        {
+          "heading": "1. 配置",
+          "level": 3,
+          "line": 68
+        },
+        {
+          "heading": "2. 跑导出线",
+          "level": 3,
+          "line": 92
+        },
+        {
+          "heading": "3. TypeScript 知识层",
+          "level": 3,
+          "line": 120
+        },
+        {
+          "heading": "路线图",
+          "level": 2,
+          "line": 160
+        },
+        {
+          "heading": "环境要求",
+          "level": 2,
+          "line": 189
+        },
+        {
+          "heading": "隐私",
+          "level": 2,
+          "line": 200
+        },
+        {
+          "heading": "许可",
+          "level": 2,
+          "line": 214
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 11
+      }
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 30,
+      "nonEmptyLines": 30,
+      "sections": [
+        {
+          "heading": "name",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "private",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "packageManager",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "engines",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "scripts",
+          "level": 1,
+          "line": 8
+        },
+        {
+          "heading": "devDependencies",
+          "level": 1,
+          "line": 19
+        },
+        {
+          "heading": "pnpm",
+          "level": 1,
+          "line": 24
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "sections": [
+        {
+          "heading": "packages",
+          "level": 1,
+          "line": 1
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "tsconfig.base.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 19,
+      "nonEmptyLines": 19,
+      "sections": [
+        {
+          "heading": "compilerOptions",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    }
+  ]
+}

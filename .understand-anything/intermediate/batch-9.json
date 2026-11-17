@@ -1,0 +1,154 @@
+{
+  "nodes": [
+    {
+      "id": "config:openspec/changes/knowledge-os-foundation/.openspec.yaml",
+      "type": "config",
+      "name": ".openspec.yaml",
+      "filePath": "openspec/changes/knowledge-os-foundation/.openspec.yaml",
+      "summary": "变更集 `knowledge-os-foundation` 的 openspec 元数据，声明采用 spec-driven 工作流（schema: spec-driven）并记录创建日期 2026-07-29，是 openspec 工具识别该 change 及关联 proposal/design/tasks 的入口。",
+      "tags": ["configuration", "openspec", "spec-driven", "change-set"],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "type": "document",
+      "name": "design.md",
+      "filePath": "openspec/changes/knowledge-os-foundation/design.md",
+      "summary": "变更集核心设计文档，含 18 条架构决策（D1–D12a）。D6 用真实语料验证 SQLite 单文件向量库+全文索引：4,802 篇切出 82,326 个 chunk、1024 维 float32 约 322MB 裸向量、落库约 375MB，实测全量插入 13s、KNN top50 p50 约 150ms、BM25 top50 p50 约 116ms，并明确换 Qdrant 的信号（百万 chunk 级或延迟 >1s）；新增 D6a 决策要求 `chunks`/`chunk_vec`/`chunks_fts` 三表共用 rowid 避免按 chunk_id 删除退化成 O(n²)（实测 429s → 13s 恢复线性，含 vec0 主键须 BigInt、`+chunk_id` auxiliary 列两个易踩细节）。同时覆盖永久 id、主题目录树、混合检索循环（remark 切块 + 双路召回 + RRF）、Embedder/VectorStore/TextIndex 三接口、trigram 分词、monorepo 布局与 P0/P1 迁移计划。",
+      "tags": ["架构决策", "设计文档", "混合检索", "sqlite", "向量库"],
+      "complexity": "complex"
+    },
+    {
+      "id": "document:openspec/changes/knowledge-os-foundation/proposal.md",
+      "type": "document",
+      "name": "proposal.md",
+      "filePath": "openspec/changes/knowledge-os-foundation/proposal.md",
+      "summary": "变更提案，阐述把约 4900 篇导出 Markdown 变成可检索知识库的动机与范围：仓库重组为 pnpm monorepo、Vault 规范（机器维护区/手写区划分、统一 frontmatter、永久 id、主题目录树）、一次性迁移管线、SQLite（vec0 + FTS5）索引检索层与 MCP Server（search_knowledge / get_document / list_topics 三工具），并给出 vault-watcher → knowledge-inbox → admin-console → ai-chat → agentic-retrieval → knowledge-graph 的后续 change 路线图。",
+      "tags": ["变更提案", "知识库", "vault", "mcp", "路线图"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:openspec/changes/knowledge-os-foundation/tasks.md",
+      "type": "document",
+      "name": "tasks.md",
+      "filePath": "openspec/changes/knowledge-os-foundation/tasks.md",
+      "summary": "变更实施任务清单，7 个阶段共 22 项任务：monorepo 骨架与导出线搬迁、领域模型与 Vault 读写、P0 迁移管线（归一化/去重/嵌入/主题归纳/分类/写入）、P1 索引与检索（Embedder/VectorStore/TextIndex 接口、AST 切块、混合检索、检索留痕）、评测与黄金问题集、MCP Server、收尾与验收准备，全部任务已勾选完成。",
+      "tags": ["任务清单", "实施计划", "迁移管线", "检索", "mcp"],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:packages/retrieval/src/types.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:packages/retrieval/src/sqlite-store.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:packages/retrieval/src/chunker.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:packages/retrieval/src/search.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:packages/retrieval/src/rrf.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:packages/retrieval/src/embedder.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:packages/retrieval/src/build-index.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "file:apps/mcp/src/index.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "config:openspec/config.yaml",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "document:openspec/changes/knowledge-os-foundation/proposal.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/proposal.md",
+      "target": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "target": "document:openspec/changes/knowledge-os-foundation/tasks.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/tasks.md",
+      "target": "document:openspec/changes/knowledge-os-foundation/design.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/proposal.md",
+      "target": "document:openspec/changes/knowledge-os-foundation/tasks.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:openspec/changes/knowledge-os-foundation/tasks.md",
+      "target": "document:openspec/changes/knowledge-os-foundation/proposal.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:openspec/changes/knowledge-os-foundation/.openspec.yaml",
+      "target": "document:openspec/changes/knowledge-os-foundation/proposal.md",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

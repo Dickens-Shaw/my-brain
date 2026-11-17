@@ -1,0 +1,928 @@
+{
+  "schemaVersion": 1,
+  "algorithm": "louvain",
+  "totalFiles": 100,
+  "totalBatches": 3,
+  "exportsByPath": {
+    "apps/mcp/src/index.ts": [],
+    "exporters/chrome-bookmarks/scripts/build_knowledge_base.py": [
+      "norm",
+      "host_of",
+      "url_tokens",
+      "enrich",
+      "w",
+      "count_hits",
+      "best_category",
+      "category_by_slug",
+      "domain_category",
+      "classify_primary",
+      "classify_secondary",
+      "drop_reasons",
+      "load_fetched",
+      "render_items",
+      "build_readme",
+      "main"
+    ],
+    "exporters/chrome-bookmarks/scripts/extract_bookmarks.py": [
+      "log",
+      "browser_base",
+      "profile_labels",
+      "discover_profiles",
+      "chrome_time",
+      "unix_time",
+      "host_of",
+      "fallback_id",
+      "make_item",
+      "parse_bookmarks_file",
+      "NetscapeBookmarkParser",
+      "parse_netscape_html",
+      "normalize_url",
+      "dedup",
+      "write_exports",
+      "command_inspect",
+      "collect_items",
+      "command_export",
+      "build_parser",
+      "main"
+    ],
+    "exporters/chrome-bookmarks/scripts/fetch_pages.py": [
+      "cookie_for",
+      "RateLimiter",
+      "build_ssl_contexts",
+      "http_get",
+      "decode_html",
+      "Node",
+      "DomBuilder",
+      "parse_dom",
+      "iter_nodes",
+      "inner_text",
+      "class_id",
+      "detach",
+      "measure",
+      "hint_node",
+      "score_nodes",
+      "fallback_node",
+      "clean_content",
+      "unwrap_redirect",
+      "code_language",
+      "tidy_markdown",
+      "MarkdownWriter",
+      "to_markdown",
+      "collect_meta",
+      "read_jsonld",
+      "normalize_time",
+      "author_of",
+      "clean_title",
+      "parse_page",
+      "host_of",
+      "skip_reason",
+      "safe_filename",
+      "yaml_escape",
+      "image_extension",
+      "download_images",
+      "render_markdown",
+      "load_targets",
+      "load_state",
+      "year_of",
+      "fetch_once",
+      "process",
+      "main"
+    ],
+    "exporters/juejin-articles/scripts/fetch_articles.py": [
+      "RateLimiter",
+      "http_get",
+      "Node",
+      "DomBuilder",
+      "parse_dom",
+      "iter_nodes",
+      "inner_text",
+      "find_body",
+      "unwrap_redirect",
+      "code_language",
+      "tidy_markdown",
+      "MarkdownWriter",
+      "parse_page",
+      "safe_filename",
+      "yaml_escape",
+      "sniff_extension",
+      "download_images",
+      "render_markdown",
+      "load_state",
+      "year_of",
+      "subdir_of",
+      "process",
+      "main"
+    ],
+    "exporters/juejin-articles/scripts/fetch_collections.py": [
+      "post_with_retry",
+      "fetch_collection_list",
+      "fetch_collection_articles",
+      "build_records",
+      "write_markdown",
+      "main"
+    ],
+    "exporters/juejin-articles/scripts/fetch_list.py": [
+      "http_post",
+      "timestamp_to_text",
+      "normalize",
+      "fetch_all",
+      "write_json",
+      "write_csv",
+      "write_markdown",
+      "env_value",
+      "default_user_id",
+      "main"
+    ],
+    "exporters/juejin-books/scripts/build_books.py": [
+      "safe_filename",
+      "yaml_escape",
+      "sniff_extension",
+      "http_get",
+      "AssetStore",
+      "resolve_local_asset",
+      "safe_filename_path",
+      "rewrite_images",
+      "normalize_title",
+      "split_title",
+      "demote_headings",
+      "render_chapter",
+      "chapter_filename",
+      "write_toc",
+      "build_book",
+      "write_report",
+      "main"
+    ],
+    "exporters/juejin-books/scripts/html_to_markdown.py": [
+      "Node",
+      "DomBuilder",
+      "parse_dom",
+      "iter_nodes",
+      "inner_text",
+      "find_body",
+      "unwrap_redirect",
+      "code_language",
+      "tidy_markdown",
+      "MarkdownWriter",
+      "html_to_markdown"
+    ],
+    "exporters/juejin-books/scripts/scan_books.py": [
+      "natural_key",
+      "load_toc",
+      "parse_chapter_name",
+      "chapter_kind",
+      "collect_chapter_files",
+      "dedupe_by_content",
+      "scan_book",
+      "scan_loose_pdfs",
+      "write_markdown",
+      "main"
+    ],
+    "exporters/wechat-favorites/scripts/build_article_index.py": [
+      "load_json",
+      "relative_link",
+      "label",
+      "main",
+      "read_frontmatter_field",
+      "write_index",
+      "write_root_index"
+    ],
+    "exporters/wechat-favorites/scripts/build_knowledge_base.py": [
+      "norm",
+      "read_tag",
+      "all_tags",
+      "infer_url",
+      "host_of",
+      "strip_urls",
+      "enrich",
+      "w",
+      "count_hits",
+      "classify_primary",
+      "classify_secondary",
+      "drop_reasons",
+      "safe",
+      "render_items",
+      "build_readme",
+      "main"
+    ],
+    "exporters/wechat-favorites/scripts/extract_favorite_audio.py": [
+      "AudioItem",
+      "tag_text",
+      "tag_attr",
+      "to_int",
+      "parse_audio_items",
+      "is_audio_blob",
+      "looks_like_msgid",
+      "find_message_dbs",
+      "decrypt_with_passphrase",
+      "blob_fingerprints",
+      "row_timestamps",
+      "index_audio_blobs",
+      "safe_filename",
+      "use_local_venv",
+      "convert_audio",
+      "write_index",
+      "resolve_favorite_db",
+      "read_passphrase",
+      "command_scan",
+      "build_blob_index",
+      "command_probe",
+      "command_export",
+      "build_parser",
+      "main"
+    ],
+    "exporters/wechat-favorites/scripts/extract_favorites.py": [
+      "FavoriteDb",
+      "log",
+      "run_text",
+      "read_page1",
+      "discover_favorite_dbs",
+      "choose_favorite_db",
+      "aes_cbc_decrypt",
+      "mac_key_for",
+      "verify_key",
+      "derive_favorite_key",
+      "load_passphrase",
+      "save_passphrase",
+      "check_capture_prerequisites",
+      "find_wechat_pid",
+      "parse_passphrases_from_lldb",
+      "parse_passphrase_from_lldb",
+      "cleanup_lldb",
+      "capture_valid_passphrase",
+      "decrypt_page",
+      "decrypt_database",
+      "table_names",
+      "unix_time",
+      "decode_value",
+      "first_match",
+      "parse_xml_fields",
+      "parse_fav_db_item",
+      "parse_legacy_tables",
+      "parse_decrypted_favorites",
+      "write_exports",
+      "write_key_file",
+      "command_inspect",
+      "command_capture",
+      "load_favorite_key",
+      "command_decrypt",
+      "command_export",
+      "command_all",
+      "build_parser",
+      "main"
+    ],
+    "exporters/wechat-favorites/scripts/fetch_articles.py": [
+      "RateLimiter",
+      "http_get",
+      "ContentExtractor",
+      "MarkdownConverter",
+      "pick",
+      "strip_tags",
+      "parse_article",
+      "safe_filename",
+      "yaml_escape",
+      "image_extension",
+      "download_images",
+      "render_markdown",
+      "load_targets",
+      "load_state",
+      "year_of",
+      "process",
+      "main"
+    ],
+    "exporters/wechat-favorites/scripts/watch_note_cache.py": [
+      "find_account",
+      "main"
+    ],
+    "packages/config/src/index.ts": [
+      "loadConfig",
+      "AppConfig"
+    ],
+    "packages/config/src/load.ts": [
+      "loadConfig"
+    ],
+    "packages/core/src/embedding.ts": [
+      "embeddingSupportsDimensions",
+      "assertEmbeddingDimensions"
+    ],
+    "packages/core/src/index.ts": [
+      "DocTypeSchema",
+      "SourceSchema",
+      "ScopeSchema",
+      "IdPrefixSchema",
+      "SOURCE_ID_PREFIX",
+      "RESERVED_ID_PREFIXES",
+      "TopicPathSchema",
+      "FrontmatterSchema",
+      "DocType",
+      "Source",
+      "Scope",
+      "IdPrefix",
+      "TopicPath",
+      "Frontmatter",
+      "embeddingSupportsDimensions",
+      "assertEmbeddingDimensions"
+    ],
+    "packages/core/src/schema.ts": [
+      "DocTypeSchema",
+      "SourceSchema",
+      "ScopeSchema",
+      "IdPrefixSchema",
+      "RESERVED_ID_PREFIXES",
+      "SOURCE_ID_PREFIX",
+      "TopicPathSchema",
+      "FrontmatterSchema"
+    ],
+    "packages/ingest/src/classify.ts": [
+      "loadClassified",
+      "classifyDocs",
+      "TopicTaxonomy"
+    ],
+    "packages/ingest/src/cli/migrate.ts": [],
+    "packages/ingest/src/dedupe.ts": [
+      "dedupeDocs"
+    ],
+    "packages/ingest/src/embed-docs.ts": [
+      "loadDocEmbeddings",
+      "embedDocuments"
+    ],
+    "packages/ingest/src/fsutil.ts": [
+      "ensureDir",
+      "walkMd",
+      "sha256",
+      "readJson",
+      "writeJson",
+      "stripBodyNoise"
+    ],
+    "packages/ingest/src/index.ts": [
+      "normalizeAll",
+      "dedupeDocs",
+      "normalizeSourceUrl",
+      "NormalizedDoc",
+      "ClassifiedDoc",
+      "DedupeResult"
+    ],
+    "packages/ingest/src/kmeans.ts": [
+      "kmeansCosine",
+      "nearestCentroid",
+      "cosine"
+    ],
+    "packages/ingest/src/normalize/assign-ids.ts": [
+      "assignIds",
+      "sortKey"
+    ],
+    "packages/ingest/src/normalize/index.ts": [
+      "normalizeAll",
+      "normalizeWechat",
+      "normalizeChrome",
+      "normalizeJuejin",
+      "normalizeBooks"
+    ],
+    "packages/ingest/src/normalize/parse.ts": [
+      "parseExporterMd",
+      "str",
+      "strArr",
+      "num"
+    ],
+    "packages/ingest/src/normalize/sources.ts": [
+      "normalizeWechat",
+      "normalizeChrome",
+      "normalizeJuejin",
+      "normalizeBooks"
+    ],
+    "packages/ingest/src/openai.ts": [
+      "embedTexts",
+      "chatJson"
+    ],
+    "packages/ingest/src/outline.ts": [
+      "extractOutline",
+      "docEmbedText"
+    ],
+    "packages/ingest/src/paths.ts": [
+      "findRepoRoot",
+      "migrateDir",
+      "EXPORTER_OUTPUTS"
+    ],
+    "packages/ingest/src/topics.ts": [
+      "loadTaxonomy",
+      "saveTaxonomy",
+      "induceTopics"
+    ],
+    "packages/ingest/src/types.ts": [
+      "toFrontmatter"
+    ],
+    "packages/ingest/src/url.ts": [
+      "normalizeSourceUrl"
+    ],
+    "packages/ingest/src/write-vault.ts": [
+      "writeVault"
+    ],
+    "packages/retrieval/src/build-index.ts": [
+      "buildIndex"
+    ],
+    "packages/retrieval/src/chunker.ts": [
+      "estimateTokens",
+      "chunkMarkdown"
+    ],
+    "packages/retrieval/src/cli/eval.ts": [],
+    "packages/retrieval/src/cli/index.ts": [],
+    "packages/retrieval/src/cli/search.ts": [],
+    "packages/retrieval/src/embedder.ts": [
+      "OpenAIEmbedder"
+    ],
+    "packages/retrieval/src/index.ts": [
+      "Chunk",
+      "SearchHit",
+      "SearchOptions",
+      "SearchTrace",
+      "Embedder",
+      "VectorStore",
+      "TextIndex",
+      "OpenAIEmbedder",
+      "chunkMarkdown",
+      "estimateTokens",
+      "SqliteIndex",
+      "hybridSearch",
+      "buildIndex",
+      "scanVaultDocs",
+      "rrfFuse"
+    ],
+    "packages/retrieval/src/rrf.ts": [
+      "rrfFuse"
+    ],
+    "packages/retrieval/src/scan.ts": [
+      "scanVaultDocs"
+    ],
+    "packages/retrieval/src/search.ts": [
+      "hybridSearch"
+    ],
+    "packages/retrieval/src/sqlite-store.ts": [
+      "splitTerms",
+      "SqliteIndex"
+    ],
+    "packages/retrieval/src/types.ts": [],
+    "packages/vault/src/cli/init.ts": [],
+    "packages/vault/src/cli/validate.ts": [],
+    "packages/vault/src/documents.ts": [
+      "scanMachineDocuments",
+      "getDocumentById",
+      "writeMachineDocument",
+      "ensureDir"
+    ],
+    "packages/vault/src/frontmatter.ts": [
+      "safeFilename",
+      "parseFrontmatter",
+      "parseAndValidateFrontmatter",
+      "serializeDocument"
+    ],
+    "packages/vault/src/index.ts": [
+      "MACHINE_DIRS",
+      "HANDWRITTEN_DIRS",
+      "VAULT_ROOT_DIRS",
+      "ensureVaultSkeleton",
+      "safeFilename",
+      "parseFrontmatter",
+      "parseAndValidateFrontmatter",
+      "serializeDocument",
+      "scopeFromPath",
+      "isMachinePath",
+      "isHandwrittenPath",
+      "scanMachineDocuments",
+      "getDocumentById",
+      "writeMachineDocument",
+      "VaultDocument"
+    ],
+    "packages/vault/src/paths.ts": [
+      "isMachinePath",
+      "isHandwrittenPath",
+      "scopeFromPath"
+    ],
+    "packages/vault/src/skeleton.ts": [
+      "MACHINE_DIRS",
+      "HANDWRITTEN_DIRS",
+      "VAULT_ROOT_DIRS",
+      "ensureVaultSkeleton"
+    ]
+  },
+  "batches": [
+    {
+      "batchIndex": 2,
+      "files": [
+        {
+          "path": "packages/retrieval/src/build-index.ts",
+          "language": "typescript",
+          "sizeLines": 110,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/chunker.ts",
+          "language": "typescript",
+          "sizeLines": 215,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/cli/eval.ts",
+          "language": "typescript",
+          "sizeLines": 84,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/cli/search.ts",
+          "language": "typescript",
+          "sizeLines": 57,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/embedder.ts",
+          "language": "typescript",
+          "sizeLines": 58,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/index.ts",
+          "language": "typescript",
+          "sizeLines": 16,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/rrf.ts",
+          "language": "typescript",
+          "sizeLines": 26,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/scan.ts",
+          "language": "typescript",
+          "sizeLines": 106,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/search.ts",
+          "language": "typescript",
+          "sizeLines": 104,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/sqlite-store.ts",
+          "language": "typescript",
+          "sizeLines": 564,
+          "fileCategory": "code"
+        },
+        {
+          "path": "packages/retrieval/src/types.ts",
+          "language": "typescript",
+          "sizeLines": 80,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "packages/retrieval/src/build-index.ts": [
+          "packages/config/src/index.ts",
+          "packages/retrieval/src/chunker.ts",
+          "packages/retrieval/src/embedder.ts",
+          "packages/retrieval/src/scan.ts",
+          "packages/retrieval/src/sqlite-store.ts",
+          "packages/retrieval/src/types.ts"
+        ],
+        "packages/retrieval/src/chunker.ts": [
+          "packages/core/src/index.ts",
+          "packages/retrieval/src/types.ts"
+        ],
+        "packages/retrieval/src/cli/eval.ts": [
+          "packages/config/src/index.ts",
+          "packages/retrieval/src/embedder.ts",
+          "packages/retrieval/src/search.ts",
+          "packages/retrieval/src/sqlite-store.ts"
+        ],
+        "packages/retrieval/src/cli/search.ts": [
+          "packages/config/src/index.ts",
+          "packages/core/src/index.ts",
+          "packages/retrieval/src/embedder.ts",
+          "packages/retrieval/src/search.ts",
+          "packages/retrieval/src/sqlite-store.ts"
+        ],
+        "packages/retrieval/src/embedder.ts": [
+          "packages/core/src/index.ts",
+          "packages/retrieval/src/types.ts"
+        ],
+        "packages/retrieval/src/index.ts": [
+          "packages/retrieval/src/build-index.ts",
+          "packages/retrieval/src/chunker.ts",
+          "packages/retrieval/src/embedder.ts",
+          "packages/retrieval/src/rrf.ts",
+          "packages/retrieval/src/scan.ts",
+          "packages/retrieval/src/search.ts",
+          "packages/retrieval/src/sqlite-store.ts",
+          "packages/retrieval/src/types.ts"
+        ],
+        "packages/retrieval/src/rrf.ts": [],
+        "packages/retrieval/src/scan.ts": [
+          "packages/core/src/index.ts",
+          "packages/vault/src/index.ts"
+        ],
+        "packages/retrieval/src/search.ts": [
+          "packages/core/src/index.ts",
+          "packages/retrieval/src/rrf.ts",
+          "packages/retrieval/src/sqlite-store.ts",
+          "packages/retrieval/src/types.ts"
+        ],
+        "packages/retrieval/src/sqlite-store.ts": [],
+        "packages/retrieval/src/types.ts": [
+          "packages/core/src/index.ts"
+        ]
+      },
+      "neighborMap": {
+        "packages/retrieval/src/build-index.ts": [
+          {
+            "path": "packages/config/src/index.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "loadConfig",
+              "AppConfig"
+            ]
+          },
+          {
+            "path": "packages/retrieval/src/cli/index.ts",
+            "batchIndex": 4,
+            "symbols": []
+          }
+        ],
+        "packages/retrieval/src/chunker.ts": [
+          {
+            "path": "packages/core/src/index.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocTypeSchema",
+              "SourceSchema",
+              "ScopeSchema",
+              "IdPrefixSchema",
+              "SOURCE_ID_PREFIX",
+              "RESERVED_ID_PREFIXES",
+              "TopicPathSchema",
+              "FrontmatterSchema",
+              "DocType",
+              "Source",
+              "Scope",
+              "IdPrefix",
+              "TopicPath",
+              "Frontmatter",
+              "embeddingSupportsDimensions",
+              "assertEmbeddingDimensions"
+            ]
+          }
+        ],
+        "packages/retrieval/src/cli/eval.ts": [
+          {
+            "path": "packages/config/src/index.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "loadConfig",
+              "AppConfig"
+            ]
+          }
+        ],
+        "packages/retrieval/src/cli/search.ts": [
+          {
+            "path": "packages/config/src/index.ts",
+            "batchIndex": 4,
+            "symbols": [
+              "loadConfig",
+              "AppConfig"
+            ]
+          },
+          {
+            "path": "packages/core/src/index.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocTypeSchema",
+              "SourceSchema",
+              "ScopeSchema",
+              "IdPrefixSchema",
+              "SOURCE_ID_PREFIX",
+              "RESERVED_ID_PREFIXES",
+              "TopicPathSchema",
+              "FrontmatterSchema",
+              "DocType",
+              "Source",
+              "Scope",
+              "IdPrefix",
+              "TopicPath",
+              "Frontmatter",
+              "embeddingSupportsDimensions",
+              "assertEmbeddingDimensions"
+            ]
+          }
+        ],
+        "packages/retrieval/src/embedder.ts": [
+          {
+            "path": "packages/core/src/index.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocTypeSchema",
+              "SourceSchema",
+              "ScopeSchema",
+              "IdPrefixSchema",
+              "SOURCE_ID_PREFIX",
+              "RESERVED_ID_PREFIXES",
+              "TopicPathSchema",
+              "FrontmatterSchema",
+              "DocType",
+              "Source",
+              "Scope",
+              "IdPrefix",
+              "TopicPath",
+              "Frontmatter",
+              "embeddingSupportsDimensions",
+              "assertEmbeddingDimensions"
+            ]
+          }
+        ],
+        "packages/retrieval/src/index.ts": [
+          {
+            "path": "apps/mcp/src/index.ts",
+            "batchIndex": 4,
+            "symbols": []
+          }
+        ],
+        "packages/retrieval/src/scan.ts": [
+          {
+            "path": "packages/core/src/index.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocTypeSchema",
+              "SourceSchema",
+              "ScopeSchema",
+              "IdPrefixSchema",
+              "SOURCE_ID_PREFIX",
+              "RESERVED_ID_PREFIXES",
+              "TopicPathSchema",
+              "FrontmatterSchema",
+              "DocType",
+              "Source",
+              "Scope",
+              "IdPrefix",
+              "TopicPath",
+              "Frontmatter",
+              "embeddingSupportsDimensions",
+              "assertEmbeddingDimensions"
+            ]
+          },
+          {
+            "path": "packages/vault/src/index.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "MACHINE_DIRS",
+              "HANDWRITTEN_DIRS",
+              "VAULT_ROOT_DIRS",
+              "ensureVaultSkeleton",
+              "safeFilename",
+              "parseFrontmatter",
+              "parseAndValidateFrontmatter",
+              "serializeDocument",
+              "scopeFromPath",
+              "isMachinePath",
+              "isHandwrittenPath",
+              "scanMachineDocuments",
+              "getDocumentById",
+              "writeMachineDocument",
+              "VaultDocument"
+            ]
+          }
+        ],
+        "packages/retrieval/src/search.ts": [
+          {
+            "path": "packages/core/src/index.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocTypeSchema",
+              "SourceSchema",
+              "ScopeSchema",
+              "IdPrefixSchema",
+              "SOURCE_ID_PREFIX",
+              "RESERVED_ID_PREFIXES",
+              "TopicPathSchema",
+              "FrontmatterSchema",
+              "DocType",
+              "Source",
+              "Scope",
+              "IdPrefix",
+              "TopicPath",
+              "Frontmatter",
+              "embeddingSupportsDimensions",
+              "assertEmbeddingDimensions"
+            ]
+          }
+        ],
+        "packages/retrieval/src/types.ts": [
+          {
+            "path": "packages/core/src/index.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "DocTypeSchema",
+              "SourceSchema",
+              "ScopeSchema",
+              "IdPrefixSchema",
+              "SOURCE_ID_PREFIX",
+              "RESERVED_ID_PREFIXES",
+              "TopicPathSchema",
+              "FrontmatterSchema",
+              "DocType",
+              "Source",
+              "Scope",
+              "IdPrefix",
+              "TopicPath",
+              "Frontmatter",
+              "embeddingSupportsDimensions",
+              "assertEmbeddingDimensions"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "batchIndex": 5,
+      "files": [
+        {
+          "path": ".env.example",
+          "language": "config",
+          "sizeLines": 78,
+          "fileCategory": "config"
+        },
+        {
+          "path": "README.md",
+          "language": "markdown",
+          "sizeLines": 274,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "README.zh-CN.md",
+          "language": "markdown",
+          "sizeLines": 220,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "package.json",
+          "language": "json",
+          "sizeLines": 30,
+          "fileCategory": "config"
+        },
+        {
+          "path": "pnpm-workspace.yaml",
+          "language": "yaml",
+          "sizeLines": 3,
+          "fileCategory": "config"
+        },
+        {
+          "path": "tsconfig.base.json",
+          "language": "json",
+          "sizeLines": 19,
+          "fileCategory": "config"
+        }
+      ],
+      "batchImportData": {
+        ".env.example": [],
+        "README.md": [],
+        "README.zh-CN.md": [],
+        "package.json": [],
+        "pnpm-workspace.yaml": [],
+        "tsconfig.base.json": []
+      },
+      "neighborMap": {}
+    },
+    {
+      "batchIndex": 9,
+      "files": [
+        {
+          "path": "openspec/changes/knowledge-os-foundation/.openspec.yaml",
+          "language": "yaml",
+          "sizeLines": 2,
+          "fileCategory": "config"
+        },
+        {
+          "path": "openspec/changes/knowledge-os-foundation/design.md",
+          "language": "markdown",
+          "sizeLines": 222,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "openspec/changes/knowledge-os-foundation/proposal.md",
+          "language": "markdown",
+          "sizeLines": 56,
+          "fileCategory": "docs"
+        },
+        {
+          "path": "openspec/changes/knowledge-os-foundation/tasks.md",
+          "language": "markdown",
+          "sizeLines": 50,
+          "fileCategory": "docs"
+        }
+      ],
+      "batchImportData": {
+        "openspec/changes/knowledge-os-foundation/.openspec.yaml": [],
+        "openspec/changes/knowledge-os-foundation/design.md": [],
+        "openspec/changes/knowledge-os-foundation/proposal.md": [],
+        "openspec/changes/knowledge-os-foundation/tasks.md": []
+      },
+      "neighborMap": {}
+    }
+  ]
+}

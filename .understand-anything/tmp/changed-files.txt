@@ -1,0 +1,4 @@
+README.md
+README.zh-CN.md
+openspec/changes/knowledge-os-foundation/design.md
+packages/retrieval/src/sqlite-store.ts

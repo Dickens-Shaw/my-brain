@@ -1,0 +1,2167 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "packages/retrieval/src/build-index.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 110,
+      "nonEmptyLines": 100,
+      "functions": [
+        {
+          "name": "buildIndex",
+          "startLine": 8,
+          "endLine": 110,
+          "params": [
+            "options"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "buildIndex",
+          "line": 8,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "buildIndex",
+          "callee": "scanVaultDocs",
+          "lineNumber": 29
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "index.getDocHashes",
+          "lineNumber": 30
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "seen.add",
+          "lineNumber": 43
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "existing.get",
+          "lineNumber": 44
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "index.updateDocMeta",
+          "lineNumber": 48
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "chunkMarkdown",
+          "lineNumber": 54
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "toEmbed.push",
+          "lineNumber": 64
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "existing.keys",
+          "lineNumber": 68
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "seen.has",
+          "lineNumber": 69
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "index.deleteByDocIds",
+          "lineNumber": 70
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "index.deleteByDocIds",
+          "lineNumber": 79
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "index.upsertDoc",
+          "lineNumber": 80
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "chunks.slice",
+          "lineNumber": 92
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "slice.map",
+          "lineNumber": 93
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "embedder.embed",
+          "lineNumber": 94
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "index.upsertChunks",
+          "lineNumber": 95
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "slice.map",
+          "lineNumber": 96
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "console.log",
+          "lineNumber": 104
+        },
+        {
+          "caller": "buildIndex",
+          "callee": "index.close",
+          "lineNumber": 108
+        }
+      ],
+      "metrics": {
+        "importCount": 6,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/chunker.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 215,
+      "nonEmptyLines": 195,
+      "functions": [
+        {
+          "name": "estimateTokens",
+          "startLine": 15,
+          "endLine": 19,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "sha",
+          "startLine": 21,
+          "endLine": 23,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "isHeading",
+          "startLine": 30,
+          "endLine": 32,
+          "params": [
+            "n"
+          ]
+        },
+        {
+          "name": "splitIntoSections",
+          "startLine": 34,
+          "endLine": 62,
+          "params": [
+            "tree"
+          ]
+        },
+        {
+          "name": "nodesToMarkdown",
+          "startLine": 64,
+          "endLine": 75,
+          "params": [
+            "nodes"
+          ]
+        },
+        {
+          "name": "splitLongSection",
+          "startLine": 77,
+          "endLine": 133,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "mergeSmall",
+          "startLine": 135,
+          "endLine": 153,
+          "params": [
+            "chunks"
+          ]
+        },
+        {
+          "name": "chunkMarkdown",
+          "startLine": 155,
+          "endLine": 215,
+          "params": [
+            "options"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "estimateTokens",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "chunkMarkdown",
+          "line": 155,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "estimateTokens",
+          "callee": "text.match",
+          "lineNumber": 16
+        },
+        {
+          "caller": "estimateTokens",
+          "callee": "Math.ceil",
+          "lineNumber": 18
+        },
+        {
+          "caller": "sha",
+          "callee": "createHash(\"sha256\").update(text).digest(\"hex\").slice",
+          "lineNumber": 22
+        },
+        {
+          "caller": "sha",
+          "callee": "createHash(\"sha256\").update(text).digest",
+          "lineNumber": 22
+        },
+        {
+          "caller": "sha",
+          "callee": "createHash(\"sha256\").update",
+          "lineNumber": 22
+        },
+        {
+          "caller": "sha",
+          "callee": "createHash",
+          "lineNumber": 22
+        },
+        {
+          "caller": "flush",
+          "callee": "sections.push",
+          "lineNumber": 40
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "isHeading",
+          "lineNumber": 44
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "flush",
+          "lineNumber": 45
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "toString(node).trim",
+          "lineNumber": 47
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "toString",
+          "lineNumber": 47
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "stack.pop",
+          "lineNumber": 49
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "stack.push",
+          "lineNumber": 51
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "stack.map",
+          "lineNumber": 53
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "current.nodes.push",
+          "lineNumber": 57
+        },
+        {
+          "caller": "splitIntoSections",
+          "callee": "flush",
+          "lineNumber": 60
+        },
+        {
+          "caller": "nodesToMarkdown",
+          "callee": "parts.push",
+          "lineNumber": 69
+        },
+        {
+          "caller": "nodesToMarkdown",
+          "callee": "parts.push",
+          "lineNumber": 71
+        },
+        {
+          "caller": "nodesToMarkdown",
+          "callee": "toString",
+          "lineNumber": 71
+        },
+        {
+          "caller": "nodesToMarkdown",
+          "callee": "parts.join(\"\\n\\n\").trim",
+          "lineNumber": 74
+        },
+        {
+          "caller": "nodesToMarkdown",
+          "callee": "parts.join",
+          "lineNumber": 74
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "estimateTokens",
+          "lineNumber": 78
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "fence.exec",
+          "lineNumber": 87
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "marks.push",
+          "lineNumber": 88
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "blocks.push",
+          "lineNumber": 91
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "text.split",
+          "lineNumber": 91
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "blocks.push",
+          "lineNumber": 95
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "text.slice(last, mark.start).split",
+          "lineNumber": 95
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "text.slice",
+          "lineNumber": 95
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "blocks.push",
+          "lineNumber": 97
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "blocks.push",
+          "lineNumber": 101
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "text.slice(last).split",
+          "lineNumber": 101
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "text.slice",
+          "lineNumber": 101
+        },
+        {
+          "caller": "pushBuf",
+          "callee": "chunks.push",
+          "lineNumber": 111
+        },
+        {
+          "caller": "pushBuf",
+          "callee": "buf.join",
+          "lineNumber": 111
+        },
+        {
+          "caller": "pushBuf",
+          "callee": "estimateTokens",
+          "lineNumber": 116
+        },
+        {
+          "caller": "pushBuf",
+          "callee": "kept.unshift",
+          "lineNumber": 118
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "estimateTokens",
+          "lineNumber": 126
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "pushBuf",
+          "lineNumber": 127
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "buf.push",
+          "lineNumber": 128
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "pushBuf",
+          "lineNumber": 131
+        },
+        {
+          "caller": "splitLongSection",
+          "callee": "chunks.filter",
+          "lineNumber": 132
+        },
+        {
+          "caller": "mergeSmall",
+          "callee": "estimateTokens",
+          "lineNumber": 143
+        },
+        {
+          "caller": "mergeSmall",
+          "callee": "estimateTokens",
+          "lineNumber": 144
+        },
+        {
+          "caller": "mergeSmall",
+          "callee": "out.push",
+          "lineNumber": 149
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "unified()\n    .use(remarkParse)\n    .use(remarkGfm)\n    .parse",
+          "lineNumber": 165
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "unified()\n    .use(remarkParse)\n    .use",
+          "lineNumber": 165
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "unified()\n    .use",
+          "lineNumber": 165
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "unified",
+          "lineNumber": 165
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "splitIntoSections",
+          "lineNumber": 170
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "nodesToMarkdown",
+          "lineNumber": 175
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "text.trim",
+          "lineNumber": 176
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "[options.title, ...section.headingPath].join",
+          "lineNumber": 177
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "mergeSmall",
+          "lineNumber": 178
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "splitLongSection",
+          "lineNumber": 178
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "chunks.push",
+          "lineNumber": 180
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "String(idx).padStart",
+          "lineNumber": 181
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "String",
+          "lineNumber": 181
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "sha",
+          "lineNumber": 181
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "options.markdown.trim",
+          "lineNumber": 197
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "chunks.push",
+          "lineNumber": 199
+        },
+        {
+          "caller": "chunkMarkdown",
+          "callee": "sha",
+          "lineNumber": 200
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/cli/eval.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 84,
+      "nonEmptyLines": 77,
+      "functions": [
+        {
+          "name": "main",
+          "startLine": 16,
+          "endLine": 79,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "main",
+          "callee": "process.cwd",
+          "lineNumber": 18
+        },
+        {
+          "caller": "main",
+          "callee": "existsSync",
+          "lineNumber": 20
+        },
+        {
+          "caller": "main",
+          "callee": "resolve",
+          "lineNumber": 20
+        },
+        {
+          "caller": "main",
+          "callee": "resolve",
+          "lineNumber": 23
+        },
+        {
+          "caller": "main",
+          "callee": "resolve",
+          "lineNumber": 26
+        },
+        {
+          "caller": "main",
+          "callee": "existsSync",
+          "lineNumber": 27
+        },
+        {
+          "caller": "main",
+          "callee": "JSON.parse",
+          "lineNumber": 30
+        },
+        {
+          "caller": "main",
+          "callee": "readFileSync",
+          "lineNumber": 30
+        },
+        {
+          "caller": "main",
+          "callee": "items.filter",
+          "lineNumber": 31
+        },
+        {
+          "caller": "main",
+          "callee": "console.warn",
+          "lineNumber": 33
+        },
+        {
+          "caller": "main",
+          "callee": "console.warn",
+          "lineNumber": 36
+        },
+        {
+          "caller": "main",
+          "callee": "loadConfig",
+          "lineNumber": 41
+        },
+        {
+          "caller": "main",
+          "callee": "existsSync",
+          "lineNumber": 42
+        },
+        {
+          "caller": "main",
+          "callee": "hybridSearch",
+          "lineNumber": 58
+        },
+        {
+          "caller": "main",
+          "callee": "hits.map",
+          "lineNumber": 62
+        },
+        {
+          "caller": "main",
+          "callee": "item.expected_doc_ids.some",
+          "lineNumber": 63
+        },
+        {
+          "caller": "main",
+          "callee": "ids.slice(0, 5).includes",
+          "lineNumber": 63
+        },
+        {
+          "caller": "main",
+          "callee": "ids.slice",
+          "lineNumber": 63
+        },
+        {
+          "caller": "main",
+          "callee": "item.expected_doc_ids.some",
+          "lineNumber": 64
+        },
+        {
+          "caller": "main",
+          "callee": "ids.includes",
+          "lineNumber": 64
+        },
+        {
+          "caller": "main",
+          "callee": "misses.push",
+          "lineNumber": 67
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 68
+        },
+        {
+          "caller": "main",
+          "callee": "item.query.slice",
+          "lineNumber": 69
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 74
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 75
+        },
+        {
+          "caller": "main",
+          "callee": "((top5 / n) * 100).toFixed",
+          "lineNumber": 75
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 76
+        },
+        {
+          "caller": "main",
+          "callee": "((top10 / n) * 100).toFixed",
+          "lineNumber": 76
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 77
+        },
+        {
+          "caller": "main",
+          "callee": "misses.join",
+          "lineNumber": 77
+        },
+        {
+          "caller": "main",
+          "callee": "index.close",
+          "lineNumber": 78
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 0,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/cli/search.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 57,
+      "nonEmptyLines": 54,
+      "functions": [
+        {
+          "name": "arg",
+          "startLine": 9,
+          "endLine": 12,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "main",
+          "startLine": 14,
+          "endLine": 52,
+          "params": []
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "arg",
+          "callee": "process.argv.indexOf",
+          "lineNumber": 10
+        },
+        {
+          "caller": "main",
+          "callee": "arg",
+          "lineNumber": 15
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 17
+        },
+        {
+          "caller": "main",
+          "callee": "process.exit",
+          "lineNumber": 20
+        },
+        {
+          "caller": "main",
+          "callee": "loadConfig",
+          "lineNumber": 22
+        },
+        {
+          "caller": "main",
+          "callee": "existsSync",
+          "lineNumber": 23
+        },
+        {
+          "caller": "main",
+          "callee": "hybridSearch",
+          "lineNumber": 33
+        },
+        {
+          "caller": "main",
+          "callee": "arg",
+          "lineNumber": 35
+        },
+        {
+          "caller": "main",
+          "callee": "arg",
+          "lineNumber": 36
+        },
+        {
+          "caller": "main",
+          "callee": "arg",
+          "lineNumber": 37
+        },
+        {
+          "caller": "main",
+          "callee": "Number",
+          "lineNumber": 38
+        },
+        {
+          "caller": "main",
+          "callee": "arg",
+          "lineNumber": 38
+        },
+        {
+          "caller": "main",
+          "callee": "hits.entries",
+          "lineNumber": 40
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 41
+        },
+        {
+          "caller": "main",
+          "callee": "h.score.toFixed",
+          "lineNumber": 42
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 44
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "h.text.slice(0, 160).replace",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "h.text.slice",
+          "lineNumber": 45
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 46
+        },
+        {
+          "caller": "main",
+          "callee": "console.log",
+          "lineNumber": 48
+        },
+        {
+          "caller": "main",
+          "callee": "JSON.stringify",
+          "lineNumber": 49
+        },
+        {
+          "caller": "main",
+          "callee": "index.close",
+          "lineNumber": 51
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 0,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/embedder.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 58,
+      "nonEmptyLines": 55,
+      "classes": [
+        {
+          "name": "OpenAIEmbedder",
+          "startLine": 7,
+          "endLine": 58,
+          "methods": [
+            "constructor",
+            "embed"
+          ],
+          "properties": [
+            "model",
+            "dimensions",
+            "apiKey",
+            "baseUrl"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "OpenAIEmbedder",
+          "line": 7,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "constructor",
+          "callee": "(options.baseUrl ?? \"https://api.openai.com/v1\").replace",
+          "lineNumber": 20
+        },
+        {
+          "caller": "embed",
+          "callee": "fetch",
+          "lineNumber": 30
+        },
+        {
+          "caller": "embed",
+          "callee": "JSON.stringify",
+          "lineNumber": 36
+        },
+        {
+          "caller": "embed",
+          "callee": "embeddingSupportsDimensions",
+          "lineNumber": 39
+        },
+        {
+          "caller": "embed",
+          "callee": "(await res.text()).slice",
+          "lineNumber": 46
+        },
+        {
+          "caller": "embed",
+          "callee": "res.text",
+          "lineNumber": 46
+        },
+        {
+          "caller": "embed",
+          "callee": "res.json",
+          "lineNumber": 49
+        },
+        {
+          "caller": "embed",
+          "callee": "[...json.data]\n      .sort((a, b) => a.index - b.index)\n      .map",
+          "lineNumber": 52
+        },
+        {
+          "caller": "embed",
+          "callee": "[...json.data]\n      .sort",
+          "lineNumber": 52
+        },
+        {
+          "caller": "embed",
+          "callee": "assertEmbeddingDimensions",
+          "lineNumber": 55
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/retrieval/src/index.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 16,
+      "nonEmptyLines": 16,
+      "exports": [
+        {
+          "name": "Chunk",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "SearchHit",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "SearchOptions",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "SearchTrace",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "Embedder",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "VectorStore",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "TextIndex",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "OpenAIEmbedder",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "chunkMarkdown",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "estimateTokens",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "SqliteIndex",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "hybridSearch",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "buildIndex",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "scanVaultDocs",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "rrfFuse",
+          "line": 16,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 8,
+        "exportCount": 15,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/rrf.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 26,
+      "nonEmptyLines": 24,
+      "functions": [
+        {
+          "name": "rrfFuse",
+          "startLine": 2,
+          "endLine": 26,
+          "params": [
+            "lists",
+            "k"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "rrfFuse",
+          "line": 2,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "rrfFuse",
+          "callee": "scores.get",
+          "lineNumber": 13
+        },
+        {
+          "caller": "rrfFuse",
+          "callee": "Array.from",
+          "lineNumber": 15
+        },
+        {
+          "caller": "rrfFuse",
+          "callee": "scores.set",
+          "lineNumber": 19
+        },
+        {
+          "caller": "rrfFuse",
+          "callee": "[...scores.entries()]\n    .map(([chunkId, v]) => ({ chunkId, score: v.score, ranks: v.ranks }))\n    .sort",
+          "lineNumber": 23
+        },
+        {
+          "caller": "rrfFuse",
+          "callee": "[...scores.entries()]\n    .map",
+          "lineNumber": 23
+        },
+        {
+          "caller": "rrfFuse",
+          "callee": "scores.entries",
+          "lineNumber": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/scan.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 106,
+      "nonEmptyLines": 96,
+      "functions": [
+        {
+          "name": "walkMd",
+          "startLine": 32,
+          "endLine": 47,
+          "params": [
+            "root"
+          ]
+        },
+        {
+          "name": "hash",
+          "startLine": 49,
+          "endLine": 51,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "scanVaultDocs",
+          "startLine": 53,
+          "endLine": 106,
+          "params": [
+            "vaultPath"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "scanVaultDocs",
+          "line": 53,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "walkMd",
+          "callee": "existsSync",
+          "lineNumber": 33
+        },
+        {
+          "caller": "walkMd",
+          "callee": "stack.pop",
+          "lineNumber": 37
+        },
+        {
+          "caller": "walkMd",
+          "callee": "readdirSync",
+          "lineNumber": 38
+        },
+        {
+          "caller": "walkMd",
+          "callee": "name.startsWith",
+          "lineNumber": 39
+        },
+        {
+          "caller": "walkMd",
+          "callee": "join",
+          "lineNumber": 40
+        },
+        {
+          "caller": "walkMd",
+          "callee": "statSync",
+          "lineNumber": 41
+        },
+        {
+          "caller": "walkMd",
+          "callee": "st.isDirectory",
+          "lineNumber": 42
+        },
+        {
+          "caller": "walkMd",
+          "callee": "stack.push",
+          "lineNumber": 42
+        },
+        {
+          "caller": "walkMd",
+          "callee": "name.endsWith",
+          "lineNumber": 43
+        },
+        {
+          "caller": "walkMd",
+          "callee": "out.push",
+          "lineNumber": 43
+        },
+        {
+          "caller": "hash",
+          "callee": "createHash(\"sha256\").update(text).digest",
+          "lineNumber": 50
+        },
+        {
+          "caller": "hash",
+          "callee": "createHash(\"sha256\").update",
+          "lineNumber": 50
+        },
+        {
+          "caller": "hash",
+          "callee": "createHash",
+          "lineNumber": 50
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "walkMd",
+          "lineNumber": 55
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "relative(vaultPath, abs).replace",
+          "lineNumber": 56
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "relative",
+          "lineNumber": 56
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "rel.startsWith",
+          "lineNumber": 57
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "rel.startsWith",
+          "lineNumber": 57
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "rel.startsWith",
+          "lineNumber": 57
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "scopeFromPath",
+          "lineNumber": 60
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "INDEX_SCOPES.has",
+          "lineNumber": 61
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "readFileSync",
+          "lineNumber": 63
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "parseFrontmatter",
+          "lineNumber": 64
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "parsed.content.replace(/^\\uFEFF/, \"\").trim",
+          "lineNumber": 65
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "parsed.content.replace",
+          "lineNumber": 65
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "hash",
+          "lineNumber": 69
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "Array.isArray",
+          "lineNumber": 70
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "String",
+          "lineNumber": 71
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "hash",
+          "lineNumber": 72
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "JSON.stringify",
+          "lineNumber": 72
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "String",
+          "lineNumber": 80
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "rel.split(\"/\").pop()?.replace",
+          "lineNumber": 80
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "rel.split(\"/\").pop",
+          "lineNumber": 80
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "rel.split",
+          "lineNumber": 80
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "FrontmatterSchema.safeParse",
+          "lineNumber": 83
+        },
+        {
+          "caller": "scanVaultDocs",
+          "callee": "docs.push",
+          "lineNumber": 93
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/search.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 104,
+      "nonEmptyLines": 94,
+      "functions": [
+        {
+          "name": "hybridSearch",
+          "startLine": 6,
+          "endLine": 104,
+          "params": [
+            "index",
+            "embedder",
+            "options"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "hybridSearch",
+          "line": 6,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "hybridSearch",
+          "callee": "Math.min",
+          "lineNumber": 11
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Math.max",
+          "lineNumber": 11
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Date.now",
+          "lineNumber": 19
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "embedder.embed",
+          "lineNumber": 23
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Date.now",
+          "lineNumber": 24
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "index.vectorSearch",
+          "lineNumber": 26
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Date.now",
+          "lineNumber": 27
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "console.error",
+          "lineNumber": 30
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Date.now",
+          "lineNumber": 36
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "index.bm25Search",
+          "lineNumber": 39
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Date.now",
+          "lineNumber": 43
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Date.now",
+          "lineNumber": 45
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "rrfFuse([vectorHits, bm25Hits]).slice",
+          "lineNumber": 46
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "rrfFuse",
+          "lineNumber": 46
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "Date.now",
+          "lineNumber": 47
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "index.getChunks",
+          "lineNumber": 49
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "fused.map",
+          "lineNumber": 49
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "vectorHits.map",
+          "lineNumber": 50
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "bm25Hits.map",
+          "lineNumber": 51
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "fused\n    .map((f) => {\n      const c = chunkMap.get(f.chunkId);\n      if (!c) return null;\n      return {\n        chunkId: c.chunkId,\n        docId: c.docId,\n        relPath: c.relPath,\n        title: c.title,\n        headingPath: c.headingPath,\n        text: c.text,\n        source: c.source,\n        scope: c.scope as Scope,\n        score: f.score,\n        vectorRank: vectorRank.get(f.chunkId) ?? null,\n        bm25Rank: bm25Rank.get(f.chunkId) ?? null,\n      } satisfies SearchHit;\n    })\n    .filter",
+          "lineNumber": 53
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "fused\n    .map",
+          "lineNumber": 53
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "chunkMap.get",
+          "lineNumber": 55
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "vectorRank.get",
+          "lineNumber": 67
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "bm25Rank.get",
+          "lineNumber": 68
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "vectorHits.map",
+          "lineNumber": 76
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "bm25Hits.map",
+          "lineNumber": 81
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "fused.map",
+          "lineNumber": 86
+        },
+        {
+          "caller": "hybridSearch",
+          "callee": "index.writeTrace",
+          "lineNumber": 94
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "packages/retrieval/src/sqlite-store.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 564,
+      "nonEmptyLines": 527,
+      "functions": [
+        {
+          "name": "splitTerms",
+          "startLine": 8,
+          "endLine": 10,
+          "params": [
+            "query"
+          ]
+        }
+      ],
+      "classes": [
+        {
+          "name": "SqliteIndex",
+          "startLine": 37,
+          "endLine": 564,
+          "methods": [
+            "constructor",
+            "migrate",
+            "close",
+            "getDocHashes",
+            "listTopics",
+            "getDocById",
+            "getDocByPath",
+            "upsertDoc",
+            "updateDocMeta",
+            "deleteChunkRows",
+            "deleteByDocIds",
+            "upsertChunks",
+            "vectorSearch",
+            "bm25Search",
+            "filterClause",
+            "ftsMatch",
+            "likeMatch",
+            "getChunks",
+            "writeTrace"
+          ],
+          "properties": [
+            "db",
+            "dimensions"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "splitTerms",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "SqliteIndex",
+          "line": 37,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "splitTerms",
+          "callee": "query.match",
+          "lineNumber": 9
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.db.pragma",
+          "lineNumber": 44
+        },
+        {
+          "caller": "constructor",
+          "callee": "sqliteVec.load",
+          "lineNumber": 45
+        },
+        {
+          "caller": "constructor",
+          "callee": "this.migrate",
+          "lineNumber": 46
+        },
+        {
+          "caller": "migrate",
+          "callee": "this.db.exec",
+          "lineNumber": 50
+        },
+        {
+          "caller": "migrate",
+          "callee": "this.db\n      .prepare(\n        `SELECT name FROM sqlite_master WHERE type='table' AND name='chunk_vec'`,\n      )\n      .get",
+          "lineNumber": 94
+        },
+        {
+          "caller": "migrate",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 94
+        },
+        {
+          "caller": "migrate",
+          "callee": "this.db.exec",
+          "lineNumber": 104
+        },
+        {
+          "caller": "close",
+          "callee": "this.db.close",
+          "lineNumber": 118
+        },
+        {
+          "caller": "getDocHashes",
+          "callee": "this.db\n      .prepare(`SELECT doc_id, content_hash, meta_hash, rel_path FROM docs`)\n      .all",
+          "lineNumber": 125
+        },
+        {
+          "caller": "getDocHashes",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 125
+        },
+        {
+          "caller": "getDocHashes",
+          "callee": "rows.map",
+          "lineNumber": 134
+        },
+        {
+          "caller": "listTopics",
+          "callee": "this.db\n      .prepare(\n        `SELECT primary_topic AS topic, COUNT(*) AS count FROM docs\n         WHERE primary_topic != '' AND scope = 'library'\n         GROUP BY primary_topic ORDER BY count DESC`,\n      )\n      .all",
+          "lineNumber": 146
+        },
+        {
+          "caller": "listTopics",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 146
+        },
+        {
+          "caller": "getDocById",
+          "callee": "this.db\n      .prepare(\n        `SELECT doc_id, rel_path, title, source, scope, primary_topic, content_hash, meta_hash\n         FROM docs WHERE doc_id = ?`,\n      )\n      .get",
+          "lineNumber": 156
+        },
+        {
+          "caller": "getDocById",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 156
+        },
+        {
+          "caller": "getDocByPath",
+          "callee": "this.db\n      .prepare(\n        `SELECT doc_id, rel_path, title, source, scope, primary_topic, content_hash, meta_hash\n         FROM docs WHERE rel_path = ?`,\n      )\n      .get",
+          "lineNumber": 187
+        },
+        {
+          "caller": "getDocByPath",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 187
+        },
+        {
+          "caller": "upsertDoc",
+          "callee": "this.db\n      .prepare(\n        `INSERT INTO docs(doc_id, rel_path, title, source, scope, primary_topic, content_hash, meta_hash)\n         VALUES (@docId, @relPath, @title, @source, @scope, @primaryTopic, @contentHash, @metaHash)\n         ON CONFLICT(doc_id) DO UPDATE SET\n           rel_path=excluded.rel_path,\n           title=excluded.title,\n           source=excluded.source,\n           scope=excluded.scope,\n           primary_topic=excluded.primary_topic,\n           content_hash=excluded.content_hash,\n           meta_hash=excluded.meta_hash`,\n      )\n      .run",
+          "lineNumber": 218
+        },
+        {
+          "caller": "upsertDoc",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 218
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db\n      .prepare(\n        `UPDATE docs SET primary_topic = ?, meta_hash = ? WHERE doc_id = ?`,\n      )\n      .run",
+          "lineNumber": 235
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 235
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db\n      .prepare(`UPDATE chunks SET primary_topic = ? WHERE doc_id = ?`)\n      .run",
+          "lineNumber": 240
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 240
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db\n      .prepare(`SELECT rowid FROM chunks WHERE doc_id = ?`)\n      .all",
+          "lineNumber": 245
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 245
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db.prepare",
+          "lineNumber": 248
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "this.db.transaction",
+          "lineNumber": 251
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "upd.run",
+          "lineNumber": 252
+        },
+        {
+          "caller": "updateDocMeta",
+          "callee": "tx",
+          "lineNumber": 254
+        },
+        {
+          "caller": "deleteChunkRows",
+          "callee": "this.db.prepare",
+          "lineNumber": 264
+        },
+        {
+          "caller": "deleteChunkRows",
+          "callee": "this.db.prepare",
+          "lineNumber": 265
+        },
+        {
+          "caller": "deleteChunkRows",
+          "callee": "this.db.prepare",
+          "lineNumber": 266
+        },
+        {
+          "caller": "deleteChunkRows",
+          "callee": "delVec.run",
+          "lineNumber": 268
+        },
+        {
+          "caller": "deleteChunkRows",
+          "callee": "BigInt",
+          "lineNumber": 268
+        },
+        {
+          "caller": "deleteChunkRows",
+          "callee": "delFts.run",
+          "lineNumber": 269
+        },
+        {
+          "caller": "deleteChunkRows",
+          "callee": "delChunk.run",
+          "lineNumber": 270
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "this.db\n      .prepare(\n        `SELECT rowid FROM chunks WHERE doc_id IN (${docIds.map(() => \"?\").join(\",\")})`,\n      )\n      .all",
+          "lineNumber": 276
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 276
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "docIds.map(() => \"?\").join",
+          "lineNumber": 278
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "docIds.map",
+          "lineNumber": 278
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "this.db.prepare",
+          "lineNumber": 282
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "this.db.transaction",
+          "lineNumber": 283
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "this.deleteChunkRows",
+          "lineNumber": 284
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "rows.map",
+          "lineNumber": 284
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "delDoc.run",
+          "lineNumber": 285
+        },
+        {
+          "caller": "deleteByDocIds",
+          "callee": "tx",
+          "lineNumber": 287
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "this.db.prepare",
+          "lineNumber": 293
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "this.db.prepare",
+          "lineNumber": 296
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "this.db.prepare",
+          "lineNumber": 300
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "this.db.prepare",
+          "lineNumber": 304
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "this.db.transaction",
+          "lineNumber": 308
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "findRowid.get",
+          "lineNumber": 310
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "this.deleteChunkRows",
+          "lineNumber": 313
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "insChunk.run",
+          "lineNumber": 315
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "BigInt",
+          "lineNumber": 329
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "insVec.run",
+          "lineNumber": 331
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "insFts.run",
+          "lineNumber": 340
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "Number",
+          "lineNumber": 340
+        },
+        {
+          "caller": "upsertChunks",
+          "callee": "tx",
+          "lineNumber": 343
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "clauses.push",
+          "lineNumber": 354
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "params.push",
+          "lineNumber": 355
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "clauses.push",
+          "lineNumber": 358
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "params.push",
+          "lineNumber": 359
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "clauses.push",
+          "lineNumber": 362
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "params.push",
+          "lineNumber": 363
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "this.db\n      .prepare(\n        `SELECT chunk_id AS chunkId, distance FROM chunk_vec WHERE ${clauses.join(\" AND \")}`,\n      )\n      .all",
+          "lineNumber": 365
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 365
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "clauses.join",
+          "lineNumber": 367
+        },
+        {
+          "caller": "vectorSearch",
+          "callee": "rows.map",
+          "lineNumber": 370
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "splitTerms",
+          "lineNumber": 381
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "terms.filter",
+          "lineNumber": 387
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "terms.filter",
+          "lineNumber": 388
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "this.ftsMatch",
+          "lineNumber": 390
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "this.likeMatch",
+          "lineNumber": 392
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "list.forEach",
+          "lineNumber": 401
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "merged.set",
+          "lineNumber": 402
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "merged.get",
+          "lineNumber": 402
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "[...merged]\n      .map(([chunkId, score]) => ({ chunkId, score }))\n      .sort((a, b) => b.score - a.score)\n      .slice",
+          "lineNumber": 405
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "[...merged]\n      .map(([chunkId, score]) => ({ chunkId, score }))\n      .sort",
+          "lineNumber": 405
+        },
+        {
+          "caller": "bm25Search",
+          "callee": "[...merged]\n      .map",
+          "lineNumber": 405
+        },
+        {
+          "caller": "filterClause",
+          "callee": "params.push",
+          "lineNumber": 420
+        },
+        {
+          "caller": "filterClause",
+          "callee": "params.push",
+          "lineNumber": 424
+        },
+        {
+          "caller": "filterClause",
+          "callee": "params.push",
+          "lineNumber": 428
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "terms.map((t) => `\"${t.replace(/\"/g, \"\")}\"`).join",
+          "lineNumber": 440
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "terms.map",
+          "lineNumber": 440
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "t.replace",
+          "lineNumber": 440
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "this.filterClause",
+          "lineNumber": 441
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "this.db\n        .prepare(sql)\n        .all",
+          "lineNumber": 450
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "this.db\n        .prepare",
+          "lineNumber": 450
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "rows.map",
+          "lineNumber": 454
+        },
+        {
+          "caller": "ftsMatch",
+          "callee": "Math.abs",
+          "lineNumber": 456
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "this.filterClause",
+          "lineNumber": 468
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "terms\n      .map(\n        () =>\n          `((LENGTH(c.text) - LENGTH(REPLACE(LOWER(c.text), ?, ''))) / ?)`,\n      )\n      .join",
+          "lineNumber": 471
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "terms\n      .map",
+          "lineNumber": 471
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "terms.map(() => `LOWER(c.text) LIKE ?`).join",
+          "lineNumber": 477
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "terms.map",
+          "lineNumber": 477
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "params.push",
+          "lineNumber": 486
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "t.toLowerCase",
+          "lineNumber": 486
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "params.push",
+          "lineNumber": 487
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "t.toLowerCase",
+          "lineNumber": 487
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "params.push",
+          "lineNumber": 488
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "this.db.prepare(sql).all",
+          "lineNumber": 491
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "this.db.prepare",
+          "lineNumber": 491
+        },
+        {
+          "caller": "likeMatch",
+          "callee": "rows.map",
+          "lineNumber": 495
+        },
+        {
+          "caller": "getChunks",
+          "callee": "this.db.prepare",
+          "lineNumber": 504
+        },
+        {
+          "caller": "getChunks",
+          "callee": "stmt.get",
+          "lineNumber": 509
+        },
+        {
+          "caller": "getChunks",
+          "callee": "map.set",
+          "lineNumber": 524
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "this.db\n      .prepare(\n        `INSERT INTO search_traces(created_at, query, options_json, vector_json, bm25_json, fused_json, timings_json)\n         VALUES (?, ?, ?, ?, ?, ?, ?)`,\n      )\n      .run",
+          "lineNumber": 549
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "this.db\n      .prepare",
+          "lineNumber": 549
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "new Date().toISOString",
+          "lineNumber": 555
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "JSON.stringify",
+          "lineNumber": 557
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "JSON.stringify",
+          "lineNumber": 558
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "JSON.stringify",
+          "lineNumber": 559
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "JSON.stringify",
+          "lineNumber": 560
+        },
+        {
+          "caller": "writeTrace",
+          "callee": "JSON.stringify",
+          "lineNumber": 561
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 1,
+        "classCount": 1
+      }
+    },
+    {
+      "path": "packages/retrieval/src/types.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 80,
+      "nonEmptyLines": 73,
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

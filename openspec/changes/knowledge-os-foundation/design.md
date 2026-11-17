@@ -90,11 +90,19 @@ Vault 装的是公众号文章、掘金文章和付费小册——他人的版�
 
 ### D6：SQLite 一个文件同时当向量库与全文索引
 
-`vec0` 虚拟表支持元数据列并能在 KNN 查询内直接过滤（`where topic = '前端' and k = 10`），支持 int8 与二值量化，也支持 IVF 与 DiskANN 索引，8~9 万条向量在其舒适区内。FTS5 提供 BM25。两者在同一个数据库文件里，联表取回 chunk 正文不需要跨进程。
+`vec0` 虚拟表支持元数据列并能在 KNN 查询内直接过滤（`where topic = '前端' and k = 10`），支持 int8 与二值量化，也支持 IVF 与 DiskANN 索引。FTS5 提供 BM25。两者在同一个数据库文件里，联表取回 chunk 正文不需要跨进程。
 
-考虑过 Qdrant + Meilisearch。它们能提供的额外能力（分布式、亿级规模、更精细的索引调优）在这个量级上用不到，代价是两个常驻服务加 Docker。用户选择了"先本机轻量、但留好换血口子"。
+规模已用真实语料量过，不是估算：4802 篇正文切出 **82,326 个 chunk**，1024 维 float32 合计约 322MB 裸向量，落库后 SQLite 文件约 375MB。在这个量级上实测（M 系列 Mac，暴力扫描）：全量插入 13 秒，向量 KNN top50 的 p50 约 150ms，BM25 top50 的 p50 约 116ms，带 scope/topic 过滤基本同量级。单人交互场景下这个延迟没有感知问题。
 
-口子的形式是接口而不是框架：`VectorStore`、`TextIndex`、`Embedder` 三个接口，SQLite 与 OpenAI 只是第一组实现。换 Qdrant 意味着新增一个 `VectorStore` 实现，上层不动。
+考虑过 Qdrant + Meilisearch。它们的额外能力（分布式、亿级规模、HNSW 调优）在 8 万向量这个量级用不到，代价是两个常驻服务加 Docker 运维。真正需要换的信号是明确的：语料涨到百万 chunk 级，或检索延迟超过 1 秒。
+
+口子的形式是接口而不是框架：`VectorStore`、`TextIndex`、`Embedder` 三个接口，SQLite 与云端 embedding 只是第一组实现。换 Qdrant 意味着新增一个 `VectorStore` 实现，上层不动。
+
+### D6a：三张表共用 rowid
+
+`chunks`、`chunk_vec`、`chunks_fts` MUST 以同一个 rowid 对齐，增删改一律按 rowid 定位。原因是 `chunk_id` 只在 `chunks` 表上有索引：`chunk_vec` 若以它作 TEXT 主键，vec0 会把值放进 shadow 表中一个**无索引**的列；`chunks_fts` 上它是 `UNINDEXED` 列。两处按 `chunk_id` 删除都是全表扫描，导致批量建索引退化成 O(n²)——实测 8.2 万条插入耗时 429 秒，且每 2 万条的耗时从 20 秒一路涨到 193 秒。改为按 rowid 维护后同样的插入是 13 秒，且恢复线性。
+
+两个实现细节容易踩：vec0 校验主键必须是 `SQLITE_INTEGER`，而 better-sqlite3 把 JS number 绑定为 REAL，因此 rowid MUST 以 BigInt 传入；`chunk_id` 只需被返回、从不参与过滤，声明为 auxiliary 列（`+chunk_id`）而非 metadata 列。
 
 ### D7：embedding 模型由配置决定，不绑定单一供应商
 

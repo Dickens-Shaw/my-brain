@@ -1,0 +1,36 @@
+{
+  "batchIndex": 9,
+  "batchImportData": {
+    "openspec/changes/knowledge-os-foundation/.openspec.yaml": [],
+    "openspec/changes/knowledge-os-foundation/design.md": [],
+    "openspec/changes/knowledge-os-foundation/proposal.md": [],
+    "openspec/changes/knowledge-os-foundation/tasks.md": []
+  },
+  "neighborMap": {},
+  "files": [
+    {
+      "path": "openspec/changes/knowledge-os-foundation/.openspec.yaml",
+      "language": "yaml",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/design.md",
+      "language": "markdown",
+      "sizeLines": 222,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/proposal.md",
+      "language": "markdown",
+      "sizeLines": 56,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/tasks.md",
+      "language": "markdown",
+      "sizeLines": 50,
+      "fileCategory": "docs"
+    }
+  ]
+}

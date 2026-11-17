@@ -1,0 +1,50 @@
+{
+  "batchIndex": 5,
+  "batchImportData": {
+    ".env.example": [],
+    "README.md": [],
+    "README.zh-CN.md": [],
+    "package.json": [],
+    "pnpm-workspace.yaml": [],
+    "tsconfig.base.json": []
+  },
+  "neighborMap": {},
+  "files": [
+    {
+      "path": ".env.example",
+      "language": "config",
+      "sizeLines": 78,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 274,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "language": "markdown",
+      "sizeLines": 220,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "sizeLines": 30,
+      "fileCategory": "config"
+    },
+    {
+      "path": "pnpm-workspace.yaml",
+      "language": "yaml",
+      "sizeLines": 3,
+      "fileCategory": "config"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "language": "json",
+      "sizeLines": 19,
+      "fileCategory": "config"
+    }
+  ]
+}

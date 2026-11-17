@@ -1,0 +1,271 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "openspec/changes/knowledge-os-foundation/.openspec.yaml",
+      "language": "yaml",
+      "fileCategory": "config",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "sections": [
+        {
+          "heading": "schema",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "created",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/design.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 222,
+      "nonEmptyLines": 121,
+      "sections": [
+        {
+          "heading": "Context",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "Goals / Non-Goals",
+          "level": 2,
+          "line": 15
+        },
+        {
+          "heading": "Decisions",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "D1：Vault 放在独立的私有仓库",
+          "level": 3,
+          "line": 37
+        },
+        {
+          "heading": "D2：顶层按「读的」与「写的」分区",
+          "level": 3,
+          "line": 45
+        },
+        {
+          "heading": "D2a：主题目录树，配三项缓解措施",
+          "level": 3,
+          "line": 53
+        },
+        {
+          "heading": "D3：永久 id 作为系统的锚",
+          "level": 3,
+          "line": 65
+        },
+        {
+          "heading": "D4：主题体系由语料归纳，但必须经人工确认",
+          "level": 3,
+          "line": 71
+        },
+        {
+          "heading": "D5：自己实现检索循环，不用 RAG 框架",
+          "level": 3,
+          "line": 83
+        },
+        {
+          "heading": "D6：SQLite 一个文件同时当向量库与全文索引",
+          "level": 3,
+          "line": 91
+        },
+        {
+          "heading": "D6a：三张表共用 rowid",
+          "level": 3,
+          "line": 101
+        },
+        {
+          "heading": "D7：embedding 模型由配置决定，不绑定单一供应商",
+          "level": 3,
+          "line": 107
+        },
+        {
+          "heading": "D7a：chat 与 embedding 允许分属不同供应商",
+          "level": 3,
+          "line": 119
+        },
+        {
+          "heading": "D8：中文全文检索先用内置 trigram 分词器",
+          "level": 3,
+          "line": 123
+        },
+        {
+          "heading": "D9：不引入 Redis、BullMQ 与 Postgres",
+          "level": 3,
+          "line": 131
+        },
+        {
+          "heading": "D10：TypeScript monorepo，Python 导出线原样保留",
+          "level": 3,
+          "line": 137
+        },
+        {
+          "heading": "D10a：本 change 不建 `apps/api`",
+          "level": 3,
+          "line": 145
+        },
+        {
+          "heading": "D10b：手写区不要求永久 id",
+          "level": 3,
+          "line": 151
+        },
+        {
+          "heading": "D10c：配图随文档，不集中存放",
+          "level": 3,
+          "line": 159
+        },
+        {
+          "heading": "D11：MCP SDK 用稳定的 v1.x",
+          "level": 3,
+          "line": 167
+        },
+        {
+          "heading": "D12：全部走云端模型",
+          "level": 3,
+          "line": 171
+        },
+        {
+          "heading": "Risks / Trade-offs",
+          "level": 2,
+          "line": 175
+        },
+        {
+          "heading": "Migration Plan",
+          "level": 2,
+          "line": 191
+        },
+        {
+          "heading": "Open Questions",
+          "level": 2,
+          "line": 216
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 24
+      }
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/proposal.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 56,
+      "nonEmptyLines": 37,
+      "sections": [
+        {
+          "heading": "Why",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "What Changes",
+          "level": 2,
+          "line": 7
+        },
+        {
+          "heading": "后续 change 路线图",
+          "level": 2,
+          "line": 19
+        },
+        {
+          "heading": "Capabilities",
+          "level": 2,
+          "line": 32
+        },
+        {
+          "heading": "New Capabilities",
+          "level": 3,
+          "line": 34
+        },
+        {
+          "heading": "Modified Capabilities",
+          "level": 3,
+          "line": 42
+        },
+        {
+          "heading": "Impact",
+          "level": 2,
+          "line": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "openspec/changes/knowledge-os-foundation/tasks.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 50,
+      "nonEmptyLines": 37,
+      "sections": [
+        {
+          "heading": "1. Monorepo 骨架与导出线搬迁",
+          "level": 2,
+          "line": 1
+        },
+        {
+          "heading": "2. 领域模型与 Vault 读写",
+          "level": 2,
+          "line": 8
+        },
+        {
+          "heading": "3. 迁移管线（P0）",
+          "level": 2,
+          "line": 16
+        },
+        {
+          "heading": "4. 索引与检索（P1）",
+          "level": 2,
+          "line": 26
+        },
+        {
+          "heading": "5. 评测与黄金问题集",
+          "level": 2,
+          "line": 35
+        },
+        {
+          "heading": "6. MCP Server",
+          "level": 2,
+          "line": 40
+        },
+        {
+          "heading": "7. 收尾与验收准备",
+          "level": 2,
+          "line": 46
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    }
+  ]
+}

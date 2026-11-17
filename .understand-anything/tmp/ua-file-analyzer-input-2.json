@@ -1,0 +1,127 @@
+{
+  "projectRoot": "/Users/worker/Desktop/github/my-brain",
+  "batchFiles": [
+    {
+      "path": "packages/retrieval/src/build-index.ts",
+      "language": "typescript",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/chunker.ts",
+      "language": "typescript",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/eval.ts",
+      "language": "typescript",
+      "sizeLines": 84,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/cli/search.ts",
+      "language": "typescript",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/embedder.ts",
+      "language": "typescript",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/index.ts",
+      "language": "typescript",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/rrf.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/scan.ts",
+      "language": "typescript",
+      "sizeLines": 106,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/search.ts",
+      "language": "typescript",
+      "sizeLines": 104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/sqlite-store.ts",
+      "language": "typescript",
+      "sizeLines": 564,
+      "fileCategory": "code"
+    },
+    {
+      "path": "packages/retrieval/src/types.ts",
+      "language": "typescript",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "packages/retrieval/src/build-index.ts": [
+      "packages/config/src/index.ts",
+      "packages/retrieval/src/chunker.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/scan.ts",
+      "packages/retrieval/src/sqlite-store.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/chunker.ts": [
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/cli/eval.ts": [
+      "packages/config/src/index.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/search.ts",
+      "packages/retrieval/src/sqlite-store.ts"
+    ],
+    "packages/retrieval/src/cli/search.ts": [
+      "packages/config/src/index.ts",
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/search.ts",
+      "packages/retrieval/src/sqlite-store.ts"
+    ],
+    "packages/retrieval/src/embedder.ts": [
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/index.ts": [
+      "packages/retrieval/src/build-index.ts",
+      "packages/retrieval/src/chunker.ts",
+      "packages/retrieval/src/embedder.ts",
+      "packages/retrieval/src/rrf.ts",
+      "packages/retrieval/src/scan.ts",
+      "packages/retrieval/src/search.ts",
+      "packages/retrieval/src/sqlite-store.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/rrf.ts": [],
+    "packages/retrieval/src/scan.ts": [
+      "packages/core/src/index.ts",
+      "packages/vault/src/index.ts"
+    ],
+    "packages/retrieval/src/search.ts": [
+      "packages/core/src/index.ts",
+      "packages/retrieval/src/rrf.ts",
+      "packages/retrieval/src/sqlite-store.ts",
+      "packages/retrieval/src/types.ts"
+    ],
+    "packages/retrieval/src/sqlite-store.ts": [],
+    "packages/retrieval/src/types.ts": [
+      "packages/core/src/index.ts"
+    ]
+  }
+}

@@ -97,10 +97,14 @@ export class SqliteIndex {
       )
       .get() as { name?: string } | undefined;
     if (!exists) {
+      // chunk_id is a plain metadata column rather than the primary key: vec0
+      // keeps a TEXT primary key in an unindexed shadow column, so deleting by
+      // it scans every row. The integer rowid is indexed, and is kept equal to
+      // chunks.rowid so all three tables can be maintained by rowid.
       this.db.exec(`
         CREATE VIRTUAL TABLE chunk_vec USING vec0(
-          chunk_id TEXT PRIMARY KEY,
           embedding float[${this.dimensions}],
+          +chunk_id TEXT,
           doc_id TEXT,
           source TEXT,
           scope TEXT,
@@ -236,88 +240,104 @@ export class SqliteIndex {
     this.db
       .prepare(`UPDATE chunks SET primary_topic = ? WHERE doc_id = ?`)
       .run(primaryTopic, docId);
-    // vec0 metadata columns may need delete+reinsert; update if supported
+    // Update via rowid: chunk_id is an unindexed vec0 metadata column, so
+    // filtering on it would scan the whole table once per chunk.
     const rows = this.db
-      .prepare(`SELECT chunk_id FROM chunks WHERE doc_id = ?`)
-      .all(docId) as { chunk_id: string }[];
-    for (const r of rows) {
-      this.db
-        .prepare(`UPDATE chunk_vec SET primary_topic = ? WHERE chunk_id = ?`)
-        .run(primaryTopic, r.chunk_id);
+      .prepare(`SELECT rowid FROM chunks WHERE doc_id = ?`)
+      .all(docId) as { rowid: number }[];
+    const upd = this.db.prepare(
+      `UPDATE chunk_vec SET primary_topic = ? WHERE rowid = ?`,
+    );
+    const tx = this.db.transaction(() => {
+      for (const r of rows) upd.run(primaryTopic, r.rowid);
+    });
+    tx();
+  }
+
+  /**
+   * `chunk_id` is only indexed on the `chunks` table — on `chunk_vec` it is a
+   * vec0 metadata column and on `chunks_fts` it is UNINDEXED, so deleting by it
+   * scans the whole table and makes bulk indexing degrade quadratically. All
+   * three tables therefore share one rowid, resolved from `chunks` first.
+   */
+  private deleteChunkRows(rowids: number[]): void {
+    const delVec = this.db.prepare(`DELETE FROM chunk_vec WHERE rowid = ?`);
+    const delFts = this.db.prepare(`DELETE FROM chunks_fts WHERE rowid = ?`);
+    const delChunk = this.db.prepare(`DELETE FROM chunks WHERE rowid = ?`);
+    for (const rowid of rowids) {
+      delVec.run(BigInt(rowid));
+      delFts.run(rowid);
+      delChunk.run(rowid);
     }
   }
 
   deleteByDocIds(docIds: string[]): void {
     if (!docIds.length) return;
-    const chunkIds = this.db
+    const rows = this.db
       .prepare(
-        `SELECT chunk_id FROM chunks WHERE doc_id IN (${docIds.map(() => "?").join(",")})`,
+        `SELECT rowid FROM chunks WHERE doc_id IN (${docIds.map(() => "?").join(",")})`,
       )
-      .all(...docIds) as { chunk_id: string }[];
+      .all(...docIds) as { rowid: number }[];
 
+    const delDoc = this.db.prepare(`DELETE FROM docs WHERE doc_id = ?`);
     const tx = this.db.transaction(() => {
-      for (const c of chunkIds) {
-        this.db.prepare(`DELETE FROM chunk_vec WHERE chunk_id = ?`).run(c.chunk_id);
-        this.db.prepare(`DELETE FROM chunks_fts WHERE chunk_id = ?`).run(c.chunk_id);
-        this.db.prepare(`DELETE FROM chunks WHERE chunk_id = ?`).run(c.chunk_id);
-      }
-      for (const id of docIds) {
-        this.db.prepare(`DELETE FROM docs WHERE doc_id = ?`).run(id);
-      }
+      this.deleteChunkRows(rows.map((r) => r.rowid));
+      for (const id of docIds) delDoc.run(id);
     });
     tx();
   }
 
   upsertChunks(rows: ChunkRow[]): void {
     if (!rows.length) return;
+
+    const findRowid = this.db.prepare(
+      `SELECT rowid FROM chunks WHERE chunk_id = ?`,
+    );
+    const insChunk = this.db.prepare(
+      `INSERT INTO chunks(chunk_id, doc_id, rel_path, title, heading_path, text, source, scope, primary_topic, content_hash)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    );
+    const insVec = this.db.prepare(
+      `INSERT INTO chunk_vec(rowid, embedding, chunk_id, doc_id, source, scope, primary_topic)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    );
+    const insFts = this.db.prepare(
+      `INSERT INTO chunks_fts(rowid, text, chunk_id) VALUES (?, ?, ?)`,
+    );
+
     const tx = this.db.transaction(() => {
       for (const r of rows) {
-        this.db
-          .prepare(`DELETE FROM chunk_vec WHERE chunk_id = ?`)
-          .run(r.chunkId);
-        this.db
-          .prepare(`DELETE FROM chunks_fts WHERE chunk_id = ?`)
-          .run(r.chunkId);
-        this.db.prepare(`DELETE FROM chunks WHERE chunk_id = ?`).run(r.chunkId);
+        const existing = findRowid.get(r.chunkId) as
+          | { rowid: number }
+          | undefined;
+        if (existing) this.deleteChunkRows([existing.rowid]);
 
-        this.db
-          .prepare(
-            `INSERT INTO chunks(chunk_id, doc_id, rel_path, title, heading_path, text, source, scope, primary_topic, content_hash)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          )
-          .run(
-            r.chunkId,
-            r.docId,
-            r.relPath,
-            r.title,
-            r.headingPath,
-            r.text,
-            r.source,
-            r.scope,
-            r.primaryTopic,
-            r.contentHash,
-          );
+        const info = insChunk.run(
+          r.chunkId,
+          r.docId,
+          r.relPath,
+          r.title,
+          r.headingPath,
+          r.text,
+          r.source,
+          r.scope,
+          r.primaryTopic,
+          r.contentHash,
+        );
+        // vec0 checks for SQLITE_INTEGER on the primary key, and better-sqlite3
+        // binds plain JS numbers as REAL, so the rowid must be passed as BigInt.
+        const rowid = BigInt(info.lastInsertRowid);
 
-        this.db
-          .prepare(
-            `INSERT INTO chunk_vec(chunk_id, embedding, doc_id, source, scope, primary_topic)
-             VALUES (?, ?, ?, ?, ?, ?)`,
-          )
-          .run(
-            r.chunkId,
-            new Float32Array(r.embedding),
-            r.docId,
-            r.source,
-            r.scope,
-            r.primaryTopic,
-          );
-
-        this.db
-          .prepare(
-            `INSERT INTO chunks_fts(rowid, text, chunk_id)
-             SELECT rowid, text, chunk_id FROM chunks WHERE chunk_id = ?`,
-          )
-          .run(r.chunkId);
+        insVec.run(
+          rowid,
+          new Float32Array(r.embedding),
+          r.chunkId,
+          r.docId,
+          r.source,
+          r.scope,
+          r.primaryTopic,
+        );
+        insFts.run(Number(rowid), r.text, r.chunkId);
       }
     });
     tx();

@@ -1,0 +1,66 @@
+# .understandignore — patterns for files/dirs to exclude from analysis
+# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)
+# Lines below are suggestions — uncomment to activate.
+# Use ! prefix to force-include something excluded by defaults.
+#
+# Built-in defaults (always excluded unless negated):
+#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.
+#
+# --- Excluded (data / privacy / build artifacts / venvs) ---
+
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+*.db
+*.db-*
+.data/
+index.db
+/vault/
+/Vault/
+/my-brain-vault/
+
+# Python virtual environments
+.venv/
+venv/
+
+# Exporter data (actual exported content — huge, not code)
+exporters/*/output/
+exporters/*/input/
+exporters/*/.cache/
+exporters/*/*.json
+exporters/wechat-favorites/decrypted/
+exporters/wechat-favorites/*.db
+exporters/wechat-favorites/*.db-*
+exporters/chrome-bookmarks/*.json
+exporters/juejin-articles/*.json
+exporters/juejin-books/*.json
+*cookies*.json
+
+# Generated / vendor files inside exporters
+*.pyc
+*.pyo
+*.exe
+*.dll
+*.dist-info/
+*.typed
+
+# Media & binary (never code)
+*.webp
+*.awebp
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+*.silk
+*.image
+
+# --- Test file patterns (uncomment to exclude) ---
+
+# *.test.*
+# *.spec.*
+# *.snap
+
+# Understand-Anything 自身产物（图谱/指纹/元数据）不入图
+.understand-anything/

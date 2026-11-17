@@ -3,24 +3,30 @@
 把收藏里的语音（音频）条目导出成清单，并尽可能还原成可播放文件。
 脚本：`scripts/extract_favorite_audio.py`。
 
-**先说结论：本机这份数据里，收藏语音一段都还原不出来。** 收藏库只存 CDN 描述符，
-本机消息库的语音缓存又不覆盖这些收藏的时间；在微信里直接播放也不落盘（实测过）。
-细节见下面「为什么可能拿不到音频」。脚本仍然会生成完整清单，
-说明每一段的时间、发送人、时长和缺失原因。
+**先说结论：笔记缓存里的语音已经解开。** 收藏库本身仍然只有 CDN 描述符，
+本机消息库也没有这些语音；但「转成笔记」时落下的加密 silk 可以用本地图片同一把 key 解密。
+10 段密文全部还原成 SILK，其中 8 段和收藏清单的 `fullmd5` 一致，另有 2 段是笔记里多出来的。
+可播放文件在 `output/audio/`，命令是 `python3 scripts/decrypt_note_cache.py`。
 
-**但有一个新突破口：把收藏语音「转成笔记」后，微信会在本地落一份加密的 silk 缓存。**
-格式已经完全摸清（AES 分组 + PKCS7，跨会话同一把固定 key），10 段密文都抓到了，
-只差那把 key —— 而 key 用的是微信自带（静态编译）的 AES，不走系统库，暂时没取到。
-详见下面「转笔记会落一份加密语音缓存」。
+key 和 iv 是同一串 16 字节 ASCII：
+
+```text
+MD5(f"{kvcomm_code}{wxid}").hexdigest()[:16]
+```
+
+本机是 `MD5("974419120JustinTimberlakeShaw")` 的前 16 位，AES-128-CBC、PKCS7。
+`kvcomm_code` 在 `app_data/net/kvcomm/key_<code>_*.statistic`（跳过 0），
+`wxid` 是账号目录名去掉末尾 `_572f` 这种后缀。之前在内存里找原始 key 是走弯路：
+这把 key 不落盘，而是按账号现算的，和图片 V2 缓存用的是同一公式。
 
 ## 快速开始
 
 ```bash
 cd exporters/wechat-favorites
 
+python3 scripts/decrypt_note_cache.py              # 解密笔记缓存并转成 mp3
 python3 scripts/extract_favorite_audio.py scan     # 只列清单，不碰消息库
-python3 scripts/extract_favorite_audio.py export   # 提取音频并转码
-python3 scripts/extract_favorite_audio.py probe    # 排查消息库结构和匹配情况
+python3 scripts/extract_favorite_audio.py export   # 从消息库提取；本机这些收藏对不上
 ```
 
 前置条件：先跑过一次 `bash run.sh`（或 `extract_favorites.py capture` + `decrypt`），
@@ -153,32 +159,28 @@ business/favorite/temp/NoteCache/temp_<时间戳>.silk
 必须是 16 个 `0x10`；而末块在 CBC 里是内部块、与 IV 无关，所以不需要知道 IV 就能验 key
 （更强的判据是「10 个文件的末块解出来都得是合法 PKCS7」）。
 
-### 取 key 的尝试与现状
+### 取 key 的结果
 
-| 手段 | 结果 |
-| --- | --- |
-| lldb 断点截获（播放时挂在 `CCCrypt` / `CCCryptorCreate` / `CCCryptorCreateWithMode` / `EVP_DecryptInit_ex` / `AES_set_decrypt_key`） | 只有 `CCCryptorCreate` 触发，抓到 5 个 32 字节 key，**全部验不过**（按 10 文件末块 PKCS7 判据，与 IV 无关） |
-| 扫内存可写区（540 MB）找连续 16/24/32 字节 key | 0 命中 |
-| 扫完整 6.8 GB dump | 未跑完（手动中断） |
+系统库断点和扫可写内存都没抓到原始 key，因为微信不算完就把 key 丢掉，磁盘上也不存这 16 字节。
+key 和本地图片 V2 缓存是同一条公式，只是语音用 AES-128-CBC、iv 等于 key：
 
-结论：语音解密走的是**微信自带、静态编译进主程序的 AES**，不经过系统加密库，
-所以系统库断点抓不到；raw key 也不以连续字节存在于可写内存（很可能内存里只剩
-展开后的 AES 轮密钥表，没有原始 key）。
+```text
+aes_key = MD5(f"{code}{cleaned_wxid}").hexdigest()[:16]   # 16 个 ASCII 字符，不要 unhex
+```
 
-还没试、理论上可行的两条路：
+用「10 个文件末块都是合法 PKCS7，且明文以 `\x02#!SILK_V3` 开头」验证，10/10 通过。
+解出来的 md5 和收藏 XML 里的 `fullmd5` 一致（含那段明文长度刚好是 16 倍数、补了整块 `0x10` 的 14.7 秒）。
 
-1. **扫完整 6.8 GB 内存 dump**（`process save-core -s full`），用上面「10 文件末块全合法
-   PKCS7」当判据。命中即能一次性解开全部 10 段。
-2. **AES 轮密钥表探测**：即便内存里只有展开后的轮密钥表，也能靠密钥编排的固定递推关系
-   把它认出来，并反推回原始 key。比逐字节爆破更快，且能应对「只剩解密轮密钥表」的情况。
+`python3 scripts/decrypt_note_cache.py` 会自己读 kvcomm code 和账号目录，解密 `output/note-cache/`，
+再转成 24000 Hz、64 kbps 的 mp3，写到 `output/audio/`。编码用 `lameenc`，不依赖 ffmpeg。
 
-准备工作（都已就绪，以后接着用）：SIP 已在恢复模式关闭；`/Applications/WeChat.app`
-已用 `codesign` 重签并加上 `com.apple.security.get-task-allow`，可以干净地被 lldb 附加
-（微信自动更新后要重做重签）。
+## 如果笔记缓存不在了
 
-## 本机数据之外还剩什么办法
+本机这 10 段已经解密。缓存目录 `NoteCache/` 本身是空的，密文副本在 `output/note-cache/`。
+以后新的收藏语音如果还没转过笔记，仍然要先转一次并用 `scripts/watch_note_cache.py` 把
+`temp_*.silk` 拷出来，再跑 `decrypt_note_cache.py`。key 公式不变。
 
-既然音频能在微信里正常播放，说明 CDN 上还在，只是拿不到文件。可行的只有录音：
+没有笔记缓存时，只剩录音：
 
 1. 装一个环回音频设备把系统输出接进录音端，比如 [BlackHole](https://github.com/ExistentialAudio/BlackHole)
    （开源免费，`brew install blackhole-2ch`），建一个「多输出设备」同时接扬声器和 BlackHole，

@@ -11,6 +11,14 @@ app: not searchable, not backup-able, and gone the moment the account is. This
 repo pulls them back onto disk, then turns them into a knowledge base you can
 actually use while coding.
 
+The long-term goal is a knowledge base that AI can actually reach into, built in
+stages. **Markdown in the Vault is the single source of truth; everything else —
+index, search, and whatever gets built later — is a derived layer that can be
+deleted and rebuilt from scratch.** What exists today is the foundation: the
+four exporters, the one-shot migration, the retrieval index, and the MCP server.
+See [Roadmap](#roadmap) for what comes next and what deliberately won't be
+built.
+
 ## Layout
 
 ```
@@ -31,6 +39,15 @@ apps/
 
 The Vault (the notes themselves) lives in a **separate private repo**. This
 public repo only holds code and a `VAULT_PATH` config pointer.
+
+Two rules follow from the Vault being the source of truth, and they bind
+everything built later:
+
+- Changing a document means editing the frontmatter of that file in the Vault and
+  re-indexing — never writing to a table in some database instead. Nothing here
+  may become a second note system.
+- Delete `.data/index.db` and any future backend state at any time, and the Vault
+  must be intact. The index is disposable by design; `pnpm index` rebuilds it.
 
 ## Four exporters
 
@@ -70,9 +87,30 @@ HTML to Markdown, and relocate images.
 cp .env.example .env
 ```
 
-Fill in at least `JUEJIN_USER_ID`, `VAULT_PATH` (absolute path to the private
-Vault), and `OPENAI_API_KEY` when you want retrieval / classification.
-`WECHAT_ACCOUNT` is only needed if you have multiple WeChat accounts.
+`VAULT_PATH` (absolute path to the private Vault) is required by every command in
+the knowledge layer — they fail immediately without it. `JUEJIN_USER_ID` is needed
+for the Juejin exporter, and `WECHAT_ACCOUNT` only if you have several WeChat
+accounts.
+
+Migration and indexing additionally need two model capabilities, and **they may
+come from different providers**:
+
+| Capability | Used for | Config |
+|---|---|---|
+| Embeddings | Topic clustering and all retrieval | `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `EMBEDDING_MODEL`, `EMBEDDING_DIMENSIONS` |
+| Chat | Naming topic clusters, classifying edge cases | `CHAT_API_KEY`, `CHAT_BASE_URL`, `CHAT_MODEL` (falls back to the embedding provider) |
+
+Any provider with an OpenAI-compatible `/embeddings` endpoint works. Worth knowing
+before you pick one: **embeddings are the hard requirement and roughly 95% of the
+cost; chat is a few cents.** Some providers — DeepSeek among them — offer chat only
+and have no embeddings endpoint at all, which is exactly why the two are
+configurable separately.
+
+Model and dimension must match your provider. `EMBEDDING_DIMENSIONS` is baked into
+the vector table when it is created, so getting it wrong would corrupt the index —
+the first batch of vectors is checked and the run aborts with the correct value if
+they disagree. Changing either one later requires a full rebuild, because vectors
+from different models are not comparable.
 
 ### 2. Run exporters
 
@@ -109,18 +147,42 @@ Details live in each pipeline's own README:
 
 ```bash
 pnpm install
-pnpm vault:init                              # create Vault skeleton at VAULT_PATH
-pnpm vault:validate                          # validate frontmatter / broken image refs
-pnpm migrate --stage normalize               # migrate: normalize (then dedupe → embed → induce)
-# Review .data/migrate/topic-taxonomy.json and set status to confirmed
+pnpm vault:init                    # create Vault skeleton at VAULT_PATH
+pnpm vault:validate                # validate frontmatter / broken image refs
+
+pnpm migrate --from normalize      # normalize → dedupe → embed → induce, then stops
+# Review .data/migrate/topic-taxonomy.json, set status to confirmed
 pnpm migrate --stage classify
-pnpm migrate --stage write
-pnpm index                                   # build / incremental retrieval index (.data/index.db)
+pnpm migrate --stage write         # writes into Library/ and Books/, generates Maps/
+
+pnpm index                         # build / update the index (.data/index.db)
 pnpm search -- --query "Vite cold start"
-pnpm mcp                                     # Cursor MCP (stdio)
+pnpm mcp                           # Cursor MCP (stdio)
 ```
 
-Golden questions live in `eval/golden-questions.json`. Fill `expected_doc_ids` yourself from real coding questions, then run `pnpm eval`.
+`--from <stage>` runs that stage and everything after it; `--stage <stage>` runs
+exactly one. Stages hand off through JSON in `.data/migrate/`, so any stage can be
+re-run alone.
+
+**Migration stops on purpose after `induce`.** Clustering proposes a topic
+taxonomy and the LLM names each cluster, but that taxonomy decides the physical
+directory layout of ~4.8k documents — changing it after `write` means moving
+files en masse. So it waits for you to read `topic-taxonomy.json` (document counts,
+sample titles, warnings about clusters that are too large or too small) and set
+`status: confirmed`. Nothing is classified until you do.
+
+`embed` and the LLM stages cost money and checkpoint as they go, so an interrupted
+run resumes instead of paying twice.
+
+What to expect at full scale, measured on the real corpus: 4,802 documents after
+dedup produce **82,326 chunks** and an index file of about **375MB**. Embedding all
+of it costs roughly **$0.6** and is dominated by network round trips, so budget
+tens of minutes. Once built, hybrid search is about 150ms for the vector half and
+115ms for BM25.
+
+Golden questions live in `eval/golden-questions.json`. Fill `expected_doc_ids`
+yourself from real coding questions, then run `pnpm eval` — nobody else can decide
+what a correct answer looks like for your own notes.
 
 Vault top-level layout:
 
@@ -129,13 +191,57 @@ Vault top-level layout:
 - `Assets/` serves handwritten notes only; imported images live next to each
   document under `assets/`
 
+## Roadmap
+
+Ordered by dependency, not by how interesting each part sounds: every step
+consumes what the previous one produced. Several have explicit trigger
+conditions, because building them early costs real money and latency for a
+benefit that hasn't been demonstrated yet.
+
+1. **`vault-watcher`** — watch the Vault, debounce, trigger incremental indexing.
+   First because it's the smallest and pays off immediately: once you're editing
+   notes in Obsidian daily, you *will* forget to re-index, and stale retrieval is
+   worse than none. No UI, no API, no queue.
+2. **`knowledge-inbox`** — import URLs, PDFs and GitHub repos into `Inbox/`, then
+   reuse the existing classifier to file them into `Library/`. CLI first: the hard
+   part is extraction quality, which has nothing to do with having a UI.
+3. **`admin-console`** — `apps/api` (NestJS) + `apps/web` (Next.js). Deliberately
+   this late, because only now does it have anything to show: retrieval traces to
+   debug, chunks to visualise, an import pipeline to drive, classifications to
+   edit.
+4. **`ai-chat`** — answers with source citations. After the console, because chat
+   quality is entirely determined by retrieval quality; without a trace viewer you
+   can't tell "never retrieved" from "retrieved but ranked below the cutoff", and
+   you end up blindly rewriting prompts.
+5. **`agentic-retrieval`** — query rewriting, multi-hop retrieval, tracing.
+   **Trigger:** more than 20% of the golden questions genuinely need "look up A,
+   then use it to look up B". Below that it multiplies tokens and latency for
+   nothing.
+6. **`knowledge-graph`** — entities and relations. **Trigger:** `Notes/` reaches a
+   few hundred entries *and* real cross-document reasoning shows up. Even then,
+   start with an adjacency table in SQLite; a graph database at that scale is
+   paying operational cost for an unproven benefit.
+
+Explicitly not planned: RSS / Notion import, mobile apps, authentication, S3 /
+MinIO, Milvus. This is single-user and local — those either have no consumer here
+or exist to solve multi-user scale.
+
+`apps/api` intentionally does not exist yet. An empty skeleton with no consumer is
+just maintenance surface; it arrives with the console that needs it.
+
 ## Requirements
 
 - macOS (WeChat pipeline needs macOS LLDB + the WeChat client; the other three
   exporters are cross-platform)
 - Python 3 (exporters use stdlib only — no `pip install`)
 - Node.js ≥ 20 + pnpm (knowledge layer)
-- SQLite ≥ 3.34 (FTS5 `trigram` tokenizer for the retrieval index)
+
+No system SQLite needed: `better-sqlite3` ships its own build with FTS5 enabled
+(currently 3.53.x), and vector search comes from the `sqlite-vec` extension loaded
+at runtime. `better-sqlite3` compiles natively on install, so the root
+`package.json` lists it under `pnpm.onlyBuiltDependencies` — without that entry
+pnpm silently skips the build and the index can't be opened. `sqlite-vec` ships
+prebuilt binaries and needs no such entry.
 
 ## Privacy
 
