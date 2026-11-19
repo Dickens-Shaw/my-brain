@@ -1,103 +1,182 @@
 [
   {
     "id": "gq-01",
-    "query": "REPLACE_ME: a real question you would ask while coding",
-    "expected_doc_ids": [],
-    "notes": "Fill with your own queries BEFORE relying on eval scores. Do not invent from the corpus."
+    "category": "exact-term",
+    "query": "Webpack 持久化缓存怎么配置",
+    "expected_doc_ids": ["bk-000366"],
+    "notes": "精确词：书名+配置项，答案明确在一篇里"
   },
   {
     "id": "gq-02",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "exact-term",
+    "query": "Babel 插件的单元测试怎么写",
+    "expected_doc_ids": ["bk-000017"],
+    "notes": "精确词"
   },
   {
     "id": "gq-03",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "exact-term",
+    "query": "Vue3 nextTick 响应式原理",
+    "expected_doc_ids": ["bk-000276"],
+    "notes": "精确词"
   },
   {
     "id": "gq-04",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "exact-term",
+    "query": "TypeScript 类型体操",
+    "expected_doc_ids": ["bk-000197"],
+    "notes": "精确词，命中书里的 TypeScript 章节"
   },
   {
     "id": "gq-05",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "exact-term",
+    "query": "CSS 3D perspective 和 transform 的区别",
+    "expected_doc_ids": ["bk-000345", "bk-000346"],
+    "notes": "精确词，两篇都要（perspective 与 transform 各一篇）"
   },
   {
     "id": "gq-06",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "paraphrase",
+    "query": "怎么让前端打包跑得更快",
+    "expected_doc_ids": ["bk-000366", "bk-000367"],
+    "notes": "换说法：不提 Webpack 这个词，问的是同一件事"
   },
   {
     "id": "gq-07",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "paraphrase",
+    "query": "面试问到我不会的算法题该怎么准备",
+    "expected_doc_ids": ["bk-000442", "bk-000323"],
+    "notes": "换说法：口语化提问。bk-000323「从容应对算法题目」是最贴的答案，bk-000442 是面试攻略。"
   },
   {
     "id": "gq-08",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "paraphrase",
+    "query": "React 里用 TS 容易踩哪些坑",
+    "expected_doc_ids": ["bk-000210"],
+    "notes": "换说法：'坑位'对应原文'坑'"
   },
   {
     "id": "gq-09",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "paraphrase",
+    "query": "怎么用 lint 工具约束团队的类型检查",
+    "expected_doc_ids": ["bk-000211"],
+    "notes": "换说法：ESLint 泛化成 lint 工具"
   },
   {
     "id": "gq-10",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "paraphrase",
+    "query": "node 服务扛不住并发怎么办",
+    "expected_doc_ids": ["bk-000004", "bk-000003"],
+    "notes": "换说法：cluster 与 HTTP 模型"
   },
   {
     "id": "gq-11",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "outdated",
+    "query": "Vue2 的响应式是怎么实现的",
+    "expected_doc_ids": ["bk-000274", "bk-000270"],
+    "notes": "过时结论：bk-000274「响应式原理：基于Proxy的响应式」讲的是 Vue3 的 Proxy 实现，正是取代 Vue2 Object.defineProperty 的新做法；bk-000270 是全书结语。"
   },
   {
     "id": "gq-12",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "outdated",
+    "query": "webpack 4 时代怎么配 loader",
+    "expected_doc_ids": ["bk-000364"],
+    "notes": "过时结论：配置结构随版本变化"
   },
   {
     "id": "gq-13",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "outdated",
+    "query": "ES5 时代有哪些 JavaScript 特性",
+    "expected_doc_ids": ["bk-000007"],
+    "notes": "过时结论"
   },
   {
     "id": "gq-14",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "outdated",
+    "query": "2020 年前的 Vue CLI 项目怎么搭",
+    "expected_doc_ids": ["bk-000278"],
+    "notes": "过时结论"
   },
   {
     "id": "gq-15",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "outdated",
+    "query": "早年的前端面试题库",
+    "expected_doc_ids": ["jj-000013", "jj-000068"],
+    "notes": "过时结论：2018/2019 年的面试题合集"
   },
   {
     "id": "gq-16",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "multi-doc",
+    "query": "webpack 5 的构建性能优化手段有哪些",
+    "expected_doc_ids": ["bk-000366", "bk-000367", "bk-000364"],
+    "notes": "多篇拼接：缓存、并行构建、配置结构各一篇"
   },
   {
     "id": "gq-17",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "multi-doc",
+    "query": "前端面试需要准备哪些知识",
+    "expected_doc_ids": ["bk-000442", "bk-000453", "bk-000454", "bk-000323"],
+    "notes": "多篇拼接：算法攻略、数据结构、排序、算法题应对"
   },
   {
     "id": "gq-18",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "multi-doc",
+    "query": "TypeScript 学习路径和工具链",
+    "expected_doc_ids": ["bk-000197", "bk-000208", "bk-000212"],
+    "notes": "多篇拼接：入门、环境、工具库"
   },
   {
     "id": "gq-19",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "multi-doc",
+    "query": "CSS 3D 动画是怎么做出来的",
+    "expected_doc_ids": ["bk-000345", "bk-000346", "bk-000347"],
+    "notes": "多篇拼接：transform、perspective、数学库"
   },
   {
     "id": "gq-20",
-    "query": "REPLACE_ME",
-    "expected_doc_ids": []
+    "category": "multi-doc",
+    "query": "Vue 源码是怎么组织的",
+    "expected_doc_ids": ["bk-000274", "bk-000268", "bk-000256"],
+    "notes": "多篇拼接：响应式原理、双向绑定实现、开篇词"
+  },
+  {
+    "id": "gq-21",
+    "category": "unanswerable",
+    "query": "Kubernetes 集群的网络策略怎么配置",
+    "expected_doc_ids": [],
+    "unanswerable": true,
+    "notes": "库里没有 K8s。语料是前端 + Node。"
+  },
+  {
+    "id": "gq-22",
+    "category": "unanswerable",
+    "query": "PostgreSQL 慢查询怎么优化索引",
+    "expected_doc_ids": [],
+    "unanswerable": true,
+    "notes": "库里有 SQLite 索引和 MySQL，没有 PostgreSQL"
+  },
+  {
+    "id": "gq-23",
+    "category": "unanswerable",
+    "query": "Rust 所有权和借用检查器怎么用",
+    "expected_doc_ids": [],
+    "unanswerable": true,
+    "notes": "库里有 Rust 提及但没有系统内容"
+  },
+  {
+    "id": "gq-24",
+    "category": "unanswerable",
+    "query": "深度学习模型怎么分布式训练",
+    "expected_doc_ids": [],
+    "unanswerable": true,
+    "notes": "库里没有深度学习训练"
+  },
+  {
+    "id": "gq-25",
+    "category": "unanswerable",
+    "query": "如何申请和配置 SSL 证书",
+    "expected_doc_ids": [],
+    "unanswerable": true,
+    "notes": "库里有 Nginx 提及但没有证书申请流程"
   }
 ]

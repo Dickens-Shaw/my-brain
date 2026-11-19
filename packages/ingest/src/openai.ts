@@ -44,6 +44,61 @@ export async function embedTexts(options: {
   };
 }
 
+/**
+ * Extract a JSON object from a model response.
+ *
+ * Models asked for JSON sometimes wrap it in a markdown fence or put a
+ * sentence in front of it. A bare `JSON.parse` then throws, and because the
+ * failure happens mid-run it aborts the whole stage — for `induce` that means
+ * losing the cluster naming work for every remaining cluster.
+ */
+export function extractJson(content: string): unknown {
+  const trimmed = content.trim();
+
+  // A fenced block: ```json ... ``` or ``` ... ```
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const candidate = fenced ? fenced[1]!.trim() : trimmed;
+
+  try {
+    return JSON.parse(candidate);
+  } catch {
+    // Fall through to brace extraction.
+  }
+
+  // The first balanced {...} in the text.
+  const start = candidate.indexOf("{");
+  if (start < 0) {
+    throw new Error(`No JSON object in model response: ${trimmed.slice(0, 200)}`);
+  }
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let i = start; i < candidate.length; i++) {
+    const ch = candidate[i]!;
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (ch === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (ch === '"') {
+      inString = !inString;
+      continue;
+    }
+    if (inString) continue;
+    if (ch === "{") depth++;
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0) {
+        return JSON.parse(candidate.slice(start, i + 1));
+      }
+    }
+  }
+  throw new Error(`Unbalanced JSON in model response: ${trimmed.slice(0, 200)}`);
+}
+
 export async function chatJson<T>(options: {
   apiKey: string;
   baseUrl?: string;
@@ -77,5 +132,5 @@ export async function chatJson<T>(options: {
   };
   const content = json.choices[0]?.message?.content;
   if (!content) throw new Error("OpenAI chat returned empty content");
-  return JSON.parse(content) as T;
+  return extractJson(content) as T;
 }

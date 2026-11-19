@@ -14,6 +14,7 @@
     "index": "pnpm --filter @my-brain/retrieval exec tsx src/cli/index.ts --",
     "search": "pnpm --filter @my-brain/retrieval exec tsx src/cli/search.ts --",
     "eval": "pnpm --filter @my-brain/retrieval exec tsx src/cli/eval.ts --",
+    "smoke": "pnpm --filter @my-brain/retrieval exec tsx src/cli/smoke.ts",
     "mcp": "pnpm --filter @my-brain/mcp start"
   },
   "devDependencies": {

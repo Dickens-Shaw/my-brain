@@ -17,6 +17,7 @@ import {
 } from "@my-brain/vault";
 import type { ClassifiedDoc } from "./types.js";
 import { toFrontmatter } from "./types.js";
+import { normalizeTopics, PENDING_TOPIC } from "./topics-path.js";
 import { writeJson } from "./fsutil.js";
 
 export type WriteReport = {
@@ -25,6 +26,11 @@ export type WriteReport = {
   maps: number;
   by_source: Record<string, number>;
   by_topic: Record<string, number>;
+  /**
+   * Documents whose topic could not be repaired and were written into the
+   * pending bucket instead.
+   */
+  repaired_topics: number;
   errors: string[];
 };
 
@@ -82,6 +88,7 @@ export function writeVault(options: {
     maps: 0,
     by_source: {},
     by_topic: {},
+    repaired_topics: 0,
     errors: [],
   };
 
@@ -90,7 +97,14 @@ export function writeVault(options: {
 
   for (const doc of docs) {
     try {
-      const fm = toFrontmatter(doc, importedAt);
+      // A topic name the model produced can violate the frontmatter schema
+      // (whitespace, an extra slash). Repairing it here keeps the document;
+      // dropping it instead would lose a fifth of the corpus.
+      const { topics, dropped } = normalizeTopics(doc.topics);
+      if (dropped.length) report.repaired_topics += 1;
+      const effectiveTopics = topics.length ? topics : [PENDING_TOPIC];
+
+      const fm = toFrontmatter({ ...doc, topics: effectiveTopics }, importedAt);
       const body = rewriteAssetLinks(loadBody(doc.body_path));
       let relPath: string;
 
@@ -109,13 +123,13 @@ export function writeVault(options: {
         copySiblingAssets(doc.body_path, relPath, vaultPath);
         report.written_chapters += 1;
       } else {
-        const primary = doc.topics[0] || "待确认/未分类";
+        const primary = effectiveTopics[0] || PENDING_TOPIC;
         const [l1, l2] = primary.split("/");
         const dir = `Library/${safeFilename(l1 || "待确认")}/${safeFilename(l2 || "未分类")}`;
         relPath = writeMachineDocument(vaultPath, dir, fm, body);
         copySiblingAssets(doc.body_path, relPath, vaultPath);
         report.written_articles += 1;
-        for (const t of doc.topics) {
+        for (const t of effectiveTopics) {
           report.by_topic[t] = (report.by_topic[t] ?? 0) + 1;
           const list = mapEntries.get(t) ?? [];
           list.push({ id: doc.id, title: doc.title, path: relPath });

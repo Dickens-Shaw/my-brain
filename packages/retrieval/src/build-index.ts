@@ -1,16 +1,27 @@
 import type { AppConfig } from "@my-brain/config";
 import { chunkMarkdown } from "./chunker.js";
+import { chunkerSignature } from "./chunker-config.js";
 import { OpenAIEmbedder } from "./embedder.js";
 import { scanVaultDocs } from "./scan.js";
 import { SqliteIndex } from "./sqlite-store.js";
 import type { Embedder } from "./types.js";
+
+export type IndexBuildResult = {
+  indexed: number;
+  skipped: number;
+  deleted: number;
+  /** Chunks written by this run. */
+  chunks: number;
+  /** Set when the index had to be rebuilt because its parameters changed. */
+  rebuilt: boolean;
+};
 
 export async function buildIndex(options: {
   config: AppConfig;
   full?: boolean;
   /** Override the embedding implementation (tests, local models). */
   embedder?: Embedder;
-}): Promise<{ indexed: number; skipped: number; deleted: number }> {
+}): Promise<IndexBuildResult> {
   const { config } = options;
   if (!options.embedder && !config.openaiApiKey) {
     throw new Error("OPENAI_API_KEY required for indexing");
@@ -26,6 +37,52 @@ export async function buildIndex(options: {
       dimensions: config.embeddingDimensions,
     });
 
+  // The index records how it was built. Vectors from different models are not
+  // comparable, and changing the chunker changes the chunks — so a mismatch
+  // means the stored vectors are meaningless for the current configuration.
+  const meta = index.getMeta();
+  const signature = chunkerSignature();
+  const expected = {
+    embedding_model: config.embeddingModel,
+    embedding_dimensions: String(config.embeddingDimensions),
+    chunker: signature,
+  };
+
+  const mismatches = Object.entries(expected).filter(
+    ([key, value]) => meta[key] !== undefined && meta[key] !== value,
+  );
+  const isEmpty = index.chunkCount() === 0;
+  let rebuilt = false;
+
+  if (mismatches.length && !isEmpty && !options.full) {
+    const detail = mismatches
+      .map(([key, value]) => `${key}: indexed "${meta[key]}" vs current "${value}"`)
+      .join("; ");
+    index.close();
+    throw new Error(
+      `Index was built with different settings (${detail}).\n` +
+        "Vectors from different models or chunkers are not comparable, so the " +
+        "index must be rebuilt. Run `pnpm index -- --full` to rebuild it.",
+    );
+  }
+
+  if (mismatches.length || isEmpty) {
+    // A rebuild starts from scratch: old chunks were produced by settings that
+    // no longer apply.
+    if (!isEmpty) {
+      console.log(
+        `Index settings changed (${mismatches
+          .map(([k]) => k)
+          .join(", ")}) — rebuilding from scratch`,
+      );
+      index.deleteByDocIds([...index.getDocHashes().keys()]);
+    }
+    for (const [key, value] of Object.entries(expected)) {
+      index.setMeta(key, value);
+    }
+    rebuilt = !isEmpty;
+  }
+
   const docs = scanVaultDocs(config.vaultPath);
   const existing = index.getDocHashes();
   const seen = new Set<string>();
@@ -33,6 +90,7 @@ export async function buildIndex(options: {
   let indexed = 0;
   let skipped = 0;
   let deleted = 0;
+  let chunksWritten = 0;
 
   const toEmbed: {
     doc: (typeof docs)[0];
@@ -98,6 +156,7 @@ export async function buildIndex(options: {
           embedding: embeddings[k]!,
         })),
       );
+      chunksWritten += slice.length;
     }
     indexed += 1;
     if (indexed % 20 === 0) {
@@ -105,6 +164,11 @@ export async function buildIndex(options: {
     }
   }
 
+  index.setMeta("last_indexed_at", new Date().toISOString());
+  index.setMeta("chunk_count", String(chunksWritten || index.chunkCount()));
+  // The trace table is the only one that grows without bound.
+  const pruned = index.pruneTraces();
+  if (pruned > 0) console.log(`  pruned ${pruned} old search traces`);
   index.close();
-  return { indexed, skipped, deleted };
+  return { indexed, skipped, deleted, chunks: chunksWritten, rebuilt };
 }

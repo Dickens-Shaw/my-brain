@@ -1,4 +1,6 @@
 import type { NormalizeResult } from "../types.js";
+import type { IdRegistry } from "./assign-ids.js";
+import { emptyRegistry } from "./assign-ids.js";
 import {
   normalizeBooks,
   normalizeChrome,
@@ -6,11 +8,14 @@ import {
   normalizeWechat,
 } from "./sources.js";
 
-export function normalizeAll(repoRoot: string): NormalizeResult {
-  const wechat = normalizeWechat(repoRoot);
-  const chrome = normalizeChrome(repoRoot);
-  const juejin = normalizeJuejin(repoRoot);
-  const books = normalizeBooks(repoRoot);
+export function normalizeAll(
+  repoRoot: string,
+  registry: IdRegistry = emptyRegistry(),
+): NormalizeResult {
+  const wechat = normalizeWechat(repoRoot, registry);
+  const chrome = normalizeChrome(repoRoot, registry);
+  const juejin = normalizeJuejin(repoRoot, registry);
+  const books = normalizeBooks(repoRoot, registry);
 
   return {
     docs: [...wechat.docs, ...chrome.docs, ...juejin.docs, ...books.docs],

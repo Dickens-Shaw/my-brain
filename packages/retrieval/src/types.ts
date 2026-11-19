@@ -33,6 +33,19 @@ export type SearchOptions = {
   scope?: Scope | "all";
   topic?: string;
   source?: string;
+  /**
+   * Which retrieval arms to run. "hybrid" is the default and the only mode
+   * the MCP server uses; the single-arm modes exist so the evaluation can
+   * compare them against each other and against the hybrid result.
+   */
+  mode?: "hybrid" | "bm25" | "vector";
+  /**
+   * Document ids to leave out of the results.
+   *
+   * An agent that searches in several rounds keeps getting the same documents
+   * back; excluding what it already has lets the next round surface new ones.
+   */
+  excludeDocIds?: string[];
 };
 
 export type SearchTrace = {

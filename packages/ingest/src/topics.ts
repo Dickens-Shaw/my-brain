@@ -3,6 +3,7 @@ import { join } from "node:path";
 import type { AppConfig } from "@my-brain/config";
 import type { NormalizedDoc } from "./types.js";
 import type { DocEmbeddingStore } from "./embed-docs.js";
+import { embedKey } from "./embed-docs.js";
 import { readJson, writeJson } from "./fsutil.js";
 import { kmeansCosine } from "./kmeans.js";
 import { chatJson } from "./openai.js";
@@ -62,8 +63,10 @@ export async function induceTopics(options: {
     );
   }
 
-  const articles = docs.filter((d) => d.type === "article" && embeddings.vectors[d.id]);
-  const vectors = articles.map((d) => embeddings.vectors[d.id]!);
+  const articles = docs.filter(
+    (d) => d.type === "article" && embeddings.vectors[embedKey(d)],
+  );
+  const vectors = articles.map((d) => embeddings.vectors[embedKey(d)]!);
   // ~sqrt(n/2) heuristic, clamped
   const k =
     options.k ??
@@ -81,24 +84,43 @@ export async function induceTopics(options: {
   }
 
   const leaves: TopicLeaf[] = [];
+  const namingFailures: string[] = [];
 
   for (let c = 0; c < centroids.length; c++) {
     const members = byCluster.get(c) ?? [];
     if (members.length === 0) continue;
     const samples = members.slice(0, 8).map((d) => d.title);
-    const named = await chatJson<{ level1: string; level2: string; name_zh: string }>({
-      apiKey: config.chatApiKey,
-      baseUrl: config.chatBaseUrl,
-      model: config.chatModel,
-      system:
-        "你是知识库主题归纳助手。根据样本标题为簇命名两级中文类目。返回 JSON：{level1, level2, name_zh}。level1/level2 简短（2-8字），不要标点。",
-      user: JSON.stringify({
-        sample_titles: samples,
-        doc_count: members.length,
-      }),
-    });
-    const level1 = (named.level1 || "未命名").replace(/[\/\\]/g, "-");
-    const level2 = (named.level2 || named.name_zh || `簇${c}`).replace(/[\/\\]/g, "-");
+
+    // One failed naming call should not abort the whole stage: the naming
+    // work for the other clusters is already paid for, and the taxonomy can
+    // still be reviewed and edited by hand.
+    let level1 = "未命名";
+    let level2 = `簇${c}`;
+    try {
+      const named = await chatJson<{
+        level1: string;
+        level2: string;
+        name_zh: string;
+      }>({
+        apiKey: config.chatApiKey,
+        baseUrl: config.chatBaseUrl,
+        model: config.chatModel,
+        system:
+          "你是知识库主题归纳助手。根据样本标题为簇命名两级中文类目。返回 JSON：{level1, level2, name_zh}。level1/level2 简短（2-8字），不要标点。",
+        user: JSON.stringify({
+          sample_titles: samples,
+          doc_count: members.length,
+        }),
+      });
+      level1 = (named.level1 || "未命名").replace(/[\/\\]/g, "-");
+      level2 = (named.level2 || named.name_zh || `簇${c}`).replace(/[\/\\]/g, "-");
+    } catch (err) {
+      namingFailures.push(`簇${c}: ${err instanceof Error ? err.message : String(err)}`);
+      console.warn(
+        `  ! cluster ${c} could not be named: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+
     const name = `${level1}/${level2}`;
     leaves.push({
       id: `leaf-${String(c).padStart(3, "0")}`,
@@ -120,7 +142,11 @@ export async function induceTopics(options: {
     k,
     leaves: leaves.sort((a, b) => b.doc_count - a.doc_count),
     notes:
-      "审核后把 status 改为 confirmed，可改 name/level1/level2、合并或删除叶子。然后运行 classify。过大(>150)/过小(<10)叶子已标记。",
+      "审核后把 status 改为 confirmed，可改 name/level1/level2、合并或删除叶子。然后运行 classify。过大(>150)/过小(<10)叶子已标记。" +
+      (namingFailures.length
+        ? `\n\n${namingFailures.length} 个簇自动命名失败，名称为占位符，需要手动命名：\n` +
+          namingFailures.map((f) => `  - ${f}`).join("\n")
+        : ""),
   };
   saveTaxonomy(migrateRoot, tax);
 
@@ -132,6 +158,11 @@ export async function induceTopics(options: {
   console.log(
     `Leaves: ${tax.leaves.length}; too_large: ${oversized}; too_small: ${undersized}`,
   );
+  if (namingFailures.length) {
+    console.warn(
+      `${namingFailures.length} clusters could not be named automatically — their names are placeholders and need manual naming`,
+    );
+  }
   console.log(
     "STOP: review the file, set status to \"confirmed\", then run: pnpm migrate --stage classify",
   );

@@ -1,7 +1,9 @@
+import { createHash } from "node:crypto";
 import type { DedupeGroup, DedupeResult, NormalizedDoc } from "./types.js";
 import { normalizeSourceUrl } from "./url.js";
 
-function completeness(doc: NormalizedDoc): number {
+/** Metadata completeness score — used to pick which copy survives a merge. */
+export function completeness(doc: NormalizedDoc): number {
   let score = 0;
   if (doc.summary) score += 2;
   if (doc.author) score += 1;
@@ -20,6 +22,25 @@ function completeness(doc: NormalizedDoc): number {
   };
   score += sourceWeight[doc.source] ?? 0;
   return score;
+}
+
+/**
+ * Text fingerprint of a body, ignoring images and links.
+ *
+ * The same article is often saved under different URLs (a reposts from
+ * another account, or the short link vs the long link). URL-based dedupe
+ * misses those; the body text does not. Images and link targets are stripped
+ * because two copies of one article often point at different CDN hosts.
+ */
+export function bodyTextFingerprint(body: string): string {
+  const text = body
+    .replace(/^>\s.*$/gm, "")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+    .replace(/\]\([^)]*\)/g, "]")
+    .replace(/https?:\/\/\S+/g, "")
+    .replace(/\s+/g, "")
+    .trim();
+  return createHash("sha256").update(text).digest("hex");
 }
 
 /**

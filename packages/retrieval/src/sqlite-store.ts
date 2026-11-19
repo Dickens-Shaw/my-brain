@@ -5,8 +5,127 @@ import * as sqliteVec from "sqlite-vec";
 const TERM_RE =
   /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]+|[A-Za-z0-9_]+/gu;
 
+/**
+ * Chinese function words that carry no retrieval signal.
+ *
+ * A question like "Webpack 持久化缓存怎么配置" ends in "怎么配置". Requiring
+ * that phrase to appear turns a good query into one that matches almost
+ * nothing — the words are about the question, not the subject.
+ */
+const CJK_STOPWORDS = new Set([
+  "怎么", "如何", "什么", "为什么", "哪些", "哪里", "可以", "需要",
+  "应该", "怎样", "是不是", "有没有", "这个", "那个", "我们", "你们",
+  "他们", "它们", "以及", "并且", "或者", "但是", "因为", "所以",
+  "一下", "一个", "一些", "这些", "那些", "关于", "对于", "通过",
+  "使用", "进行", "实现", "方法", "方式", "办法", "时候", "问题",
+]);
+
+/** English function words, same reasoning. */
+const LATIN_STOPWORDS = new Set([
+  "the", "a", "an", "is", "are", "was", "were", "be", "to", "of", "in",
+  "on", "for", "and", "or", "how", "what", "why", "which", "when",
+  "with", "can", "should", "does", "do", "it", "this", "that",
+]);
+
 export function splitTerms(query: string): string[] {
   return [...new Set(query.match(TERM_RE) ?? [])];
+}
+
+/**
+ * Split a query into terms and drop the ones that carry no signal.
+ *
+ * Chinese runs are split into overlapping bigrams, because the bigram index
+ * stores them that way; Latin words are kept whole.
+ */
+export function queryTerms(query: string): string[] {
+  const terms: string[] = [];
+  for (const raw of splitTerms(query)) {
+    if (isCjk(raw)) {
+      if (raw.length === 1) {
+        terms.push(raw);
+        continue;
+      }
+      for (const segment of splitOnStopwords(raw)) {
+        if (segment.length === 1) {
+          terms.push(segment);
+          continue;
+        }
+        for (let i = 0; i + 1 < segment.length; i++) {
+          terms.push(segment.slice(i, i + 2));
+        }
+      }
+    } else {
+      const lower = raw.toLowerCase();
+      if (lower.length < 2) continue;
+      if (LATIN_STOPWORDS.has(lower)) continue;
+      terms.push(lower);
+    }
+  }
+  return [...new Set(terms)];
+}
+
+/**
+ * Split a Chinese run at stopword boundaries.
+ *
+ * "持久化缓存怎么配置" is two words — "持久化缓存" and "配置" — but the
+ * bigrams taken across the boundary ("存怎", "么配") match nothing real.
+ * Cutting the run at the stopword first keeps only the bigrams that lie
+ * inside a word.
+ */
+function splitOnStopwords(run: string): string[] {
+  const segments: string[] = [];
+  let current = "";
+  let i = 0;
+  while (i < run.length) {
+    let matched = "";
+    for (const stop of CJK_STOPWORDS) {
+      if (run.startsWith(stop, i) && stop.length > matched.length) {
+        matched = stop;
+      }
+    }
+    if (matched) {
+      if (current) segments.push(current);
+      current = "";
+      i += matched.length;
+      continue;
+    }
+    current += run[i];
+    i += 1;
+  }
+  if (current) segments.push(current);
+  return segments;
+}
+
+/** True when the term contains CJK characters. */
+export function isCjk(term: string): boolean {
+  return /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u.test(
+    term,
+  );
+}
+
+/**
+ * Convert text into searchable tokens for the CJK bigram index.
+ *
+ * Chinese runs are split into overlapping bigrams ("前端构建" → "前端 端构 构建"),
+ * so a two-character query is an exact token lookup. Latin words are kept
+ * whole. Single-character Chinese runs are indexed as-is and matched with a
+ * prefix query.
+ */
+export function cjkBigrams(text: string): string {
+  const runs = text.match(/[\p{Script=Han}]+|[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]+|[\p{L}\p{N}_]+/gu) ?? [];
+  const out = new Set<string>();
+  for (const run of runs) {
+    if (run.length === 1) {
+      out.add(run);
+      continue;
+    }
+    if (/^[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]+$/u.test(run)) {
+      for (let i = 0; i + 1 < run.length; i++) out.add(run.slice(i, i + 2));
+    } else {
+      out.add(run.toLowerCase());
+    }
+  }
+  return [...out].join(" ");
 }
 
 export type DocRow = {
@@ -79,6 +198,23 @@ export class SqliteIndex {
         tokenize = 'trigram'
       );
 
+      -- CJK bigram index.
+      --
+      -- The trigram tokenizer cannot index or match anything shorter than 3
+      -- characters, so two-character Chinese words never match through FTS5.
+      -- Routing them through a LIKE scan over the plain chunks table walked
+      -- every chunk on every query, which with ~82k chunks was the dominant
+      -- cost of a short-term query — and short CJK terms are the common case.
+      --
+      -- This table stores Chinese runs split into overlapping bigrams, so a
+      -- two-character query is an exact token lookup instead of a scan. Latin
+      -- words are stored whole and matched exactly.
+      CREATE VIRTUAL TABLE IF NOT EXISTS chunks_cjk USING fts5(
+        bi,
+        chunk_id UNINDEXED,
+        tokenize = 'unicode61'
+      );
+
       CREATE TABLE IF NOT EXISTS search_traces (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         created_at TEXT NOT NULL,
@@ -88,6 +224,17 @@ export class SqliteIndex {
         bm25_json TEXT NOT NULL,
         fused_json TEXT NOT NULL,
         timings_json TEXT NOT NULL
+      );
+
+      -- How this index was built.
+      --
+      -- Vectors from different embedding models are not comparable, and
+      -- changing the chunker changes the chunks. Without this table an
+      -- incremental run after such a change silently mixes incompatible
+      -- vectors in one database, and nothing errors.
+      CREATE TABLE IF NOT EXISTS index_meta (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
       );
     `);
 
@@ -116,6 +263,31 @@ export class SqliteIndex {
 
   close(): void {
     this.db.close();
+  }
+
+  /** Read the index metadata (how this index was built). */
+  getMeta(): Record<string, string> {
+    const rows = this.db
+      .prepare(`SELECT key, value FROM index_meta`)
+      .all() as { key: string; value: string }[];
+    return Object.fromEntries(rows.map((r) => [r.key, r.value]));
+  }
+
+  setMeta(key: string, value: string): void {
+    this.db
+      .prepare(
+        `INSERT INTO index_meta(key, value) VALUES (?, ?)
+         ON CONFLICT(key) DO UPDATE SET value = excluded.value`,
+      )
+      .run(key, value);
+  }
+
+  /** Number of chunks currently indexed — used to detect an empty index. */
+  chunkCount(): number {
+    const row = this.db
+      .prepare(`SELECT COUNT(*) AS n FROM chunks`)
+      .get() as { n: number };
+    return row.n;
   }
 
   getDocHashes(): Map<
@@ -258,15 +430,17 @@ export class SqliteIndex {
    * `chunk_id` is only indexed on the `chunks` table — on `chunk_vec` it is a
    * vec0 metadata column and on `chunks_fts` it is UNINDEXED, so deleting by it
    * scans the whole table and makes bulk indexing degrade quadratically. All
-   * three tables therefore share one rowid, resolved from `chunks` first.
+   * four tables therefore share one rowid, resolved from `chunks` first.
    */
   private deleteChunkRows(rowids: number[]): void {
     const delVec = this.db.prepare(`DELETE FROM chunk_vec WHERE rowid = ?`);
     const delFts = this.db.prepare(`DELETE FROM chunks_fts WHERE rowid = ?`);
+    const delCjk = this.db.prepare(`DELETE FROM chunks_cjk WHERE rowid = ?`);
     const delChunk = this.db.prepare(`DELETE FROM chunks WHERE rowid = ?`);
     for (const rowid of rowids) {
       delVec.run(BigInt(rowid));
       delFts.run(rowid);
+      delCjk.run(rowid);
       delChunk.run(rowid);
     }
   }
@@ -304,6 +478,9 @@ export class SqliteIndex {
     const insFts = this.db.prepare(
       `INSERT INTO chunks_fts(rowid, text, chunk_id) VALUES (?, ?, ?)`,
     );
+    const insCjk = this.db.prepare(
+      `INSERT INTO chunks_cjk(rowid, bi, chunk_id) VALUES (?, ?, ?)`,
+    );
 
     const tx = this.db.transaction(() => {
       for (const r of rows) {
@@ -338,6 +515,7 @@ export class SqliteIndex {
           r.primaryTopic,
         );
         insFts.run(Number(rowid), r.text, r.chunkId);
+        insCjk.run(Number(rowid), cjkBigrams(r.text), r.chunkId);
       }
     });
     tx();
@@ -378,26 +556,45 @@ export class SqliteIndex {
     k: number,
     filter?: { scope?: string; topic?: string; source?: string },
   ): { chunkId: string; score: number }[] {
-    const terms = splitTerms(query);
+    const terms = queryTerms(query);
     if (terms.length === 0) return [];
 
-    // The trigram tokenizer cannot index anything shorter than 3 characters, so
-    // two-character CJK words ("前端", "缓存") never match via MATCH. Route those
-    // through LIKE, which trigram still accelerates, and merge both result sets.
-    const longTerms = terms.filter((t) => t.length >= 3);
-    const shortTerms = terms.filter((t) => t.length < 3);
+    // Two indexes, because neither tokenizer alone covers the corpus:
+    //
+    // - `chunks_fts` (trigram) matches a term only if it lines up with a
+    //   3-character window. A two-character Chinese word never matches, and
+    //   neither does a longer Chinese word that is not aligned to a window
+    //   ("数据库优化" misses "数据库索引与查询优化").
+    // - `chunks_cjk` (bigrams) matches Chinese terms of any length, because
+    //   the term is decomposed into bigram tokens.
+    //
+    // Chinese terms therefore always go to the bigram index. Latin terms of
+    // three characters or more go to the trigram index, which handles them
+    // exactly. The old LIKE scan over the plain `chunks` table is gone: it
+    // walked every chunk on every query, and short CJK terms are the common
+    // case.
+    const cjkTerms = terms.filter((t) => isCjk(t));
+    const latinTerms = terms.filter((t) => !isCjk(t) && t.length >= 3);
+    const shortLatin = terms.filter((t) => !isCjk(t) && t.length < 3);
 
-    const ftsHits = longTerms.length ? this.ftsMatch(longTerms, k, filter) : [];
-    const likeHits = shortTerms.length
-      ? this.likeMatch(shortTerms, k, filter)
-      : [];
-    if (!likeHits.length) return ftsHits;
-    if (!ftsHits.length) return likeHits;
+    // Both arms fetch more than `k` candidates: the ranking is by how many
+    // query terms a chunk contains, so the candidate pool has to be wider
+    // than the final result.
+    const pool = Math.max(k * 3, 60);
 
-    // Both lists are already ordered but their scores are not comparable
-    // (BM25 vs term frequency), so fuse on rank position instead.
+    const ftsHits = latinTerms.length ? this.ftsMatch(latinTerms, pool, filter) : [];
+    const cjkHits =
+      cjkTerms.length || shortLatin.length
+        ? this.cjkMatch([...cjkTerms, ...shortLatin], pool, filter)
+        : [];
+
+    if (!cjkHits.length) return ftsHits.slice(0, k);
+    if (!ftsHits.length) return cjkHits.slice(0, k);
+
+    // The two lists are ordered but their scores are not comparable (BM25 over
+    // different token spaces), so they are fused on rank position.
     const merged = new Map<string, number>();
-    for (const list of [ftsHits, likeHits]) {
+    for (const list of [ftsHits, cjkHits]) {
       list.forEach((hit, i) => {
         merged.set(hit.chunkId, (merged.get(hit.chunkId) ?? 0) + 1 / (60 + i + 1));
       });
@@ -451,51 +648,115 @@ export class SqliteIndex {
         .prepare(sql)
         .all(expr, ...where.params, k) as { chunkId: string; rank: number }[];
       // FTS5 bm25() is negative and lower is better; map to a positive score.
-      return rows.map((r) => ({
-        chunkId: r.chunkId,
-        score: 1 / (1 + Math.abs(r.rank)),
-      }));
+      // Coverage decides the order, for the same reason as in cjkMatch.
+      return this.rankByTermCoverage(rows, terms, k);
     } catch {
       return [];
     }
   }
 
-  private likeMatch(
+  /**
+   * Match terms against the bigram index.
+   *
+   * A Chinese term of two or more characters is decomposed into bigram
+   * tokens and matched as a phrase, so the bigrams must appear in order and
+   * next to each other — "数据库优化" does not match a document containing
+   * "数据库索引". A single-character term is stored as a one-character token
+   * and matched with a prefix query, so "前" finds every chunk containing a
+   * bigram that starts with it.
+   *
+   * Terms are ANDed, so a term that is not in the corpus does not silently
+   * widen the result to everything else.
+   */
+  private cjkMatch(
     terms: string[],
     k: number,
     filter?: { scope?: string; topic?: string; source?: string },
   ): { chunkId: string; score: number }[] {
+    const clauses = terms.map((t) => {
+      const clean = t.replace(/"/g, "");
+      if (clean.length === 1) return `"${clean}"*`;
+      const bigrams = cjkBigrams(clean).split(" ").filter(Boolean);
+      // A term with no Chinese characters (a short Latin word) is indexed
+      // whole and matched exactly.
+      if (!bigrams.length) return `"${clean.toLowerCase()}"`;
+      return `"${bigrams.join(" ")}"`;
+    });
+    // OR, not AND.
+    //
+    // A question contains words that are about the question rather than the
+    // subject — "怎么配置", "有什么区别". Requiring all of them turns a
+    // specific question into one that matches almost nothing, and the
+    // document that actually answers it is pushed out of the results.
+    //
+    // The ranking below compensates: a chunk that contains more of the
+    // query terms outranks one that contains fewer.
+    const expr = clauses.join(" OR ");
     const where = this.filterClause(filter);
-    // Term frequency via length delta after removing the term; normalised by
-    // chunk length so long chunks do not automatically win.
-    const tf = terms
-      .map(
-        () =>
-          `((LENGTH(c.text) - LENGTH(REPLACE(LOWER(c.text), ?, ''))) / ?)`,
-      )
-      .join(" + ");
-    const anyMatch = terms.map(() => `LOWER(c.text) LIKE ?`).join(" OR ");
     const sql = `
-      SELECT c.chunk_id AS chunkId,
-             (${tf}) * 1.0 / (LENGTH(c.text) + 1) AS tf
-      FROM chunks c
-      WHERE (${anyMatch})${where.sql}
-      ORDER BY tf DESC LIMIT ?
+      SELECT c.chunk_id AS chunkId, bm25(chunks_cjk) AS rank
+      FROM chunks_cjk
+      JOIN chunks c ON c.chunk_id = chunks_cjk.chunk_id
+      WHERE chunks_cjk MATCH ?${where.sql}
+      ORDER BY rank LIMIT ?
     `;
-    const params: unknown[] = [];
-    for (const t of terms) params.push(t.toLowerCase(), t.length);
-    for (const t of terms) params.push(`%${t.toLowerCase()}%`);
-    params.push(...where.params, k);
-
     try {
-      const rows = this.db.prepare(sql).all(...params) as {
-        chunkId: string;
-        tf: number;
-      }[];
-      return rows.map((r) => ({ chunkId: r.chunkId, score: r.tf }));
+      const rows = this.db
+        .prepare(sql)
+        .all(expr, ...where.params, k) as { chunkId: string; rank: number }[];
+      return this.rankByTermCoverage(rows, terms, k);
     } catch {
       return [];
     }
+  }
+
+  /**
+   * Re-rank candidates by how many query terms they contain.
+   *
+   * FTS5's BM25 ranks by term frequency, which treats a chunk containing one
+   * rare term as better than a chunk containing three of the query's terms.
+   * For a multi-term question, coverage is the better signal: the document
+   * that answers the whole question mentions more of it.
+   */
+  private rankByTermCoverage(
+    rows: { chunkId: string; rank: number }[],
+    terms: string[],
+    k: number,
+  ): { chunkId: string; score: number }[] {
+    if (rows.length <= 1 || terms.length <= 1) {
+      return rows.map((r) => ({
+        chunkId: r.chunkId,
+        score: 1 / (1 + Math.abs(r.rank)),
+      }));
+    }
+
+    const chunkIds = rows.map((r) => r.chunkId);
+    const placeholders = chunkIds.map(() => "?").join(",");
+    const textRows = this.db
+      .prepare(`SELECT chunk_id, text FROM chunks WHERE chunk_id IN (${placeholders})`)
+      .all(...chunkIds) as { chunk_id: string; text: string }[];
+    const textById = new Map(textRows.map((r) => [r.chunk_id, r.text]));
+
+    const scored = rows.map((r) => {
+      const text = (textById.get(r.chunkId) ?? "").toLowerCase();
+      let hits = 0;
+      for (const term of terms) {
+        const clean = term.toLowerCase();
+        // A two-character Chinese term is a bigram, so it appears literally
+        // in the text; a single character is a prefix match.
+        if (clean.length === 1) {
+          if (text.includes(clean)) hits += 1;
+        } else if (text.includes(clean)) {
+          hits += 1;
+        }
+      }
+      const coverage = hits / terms.length;
+      // BM25 keeps the ordering within the same coverage level.
+      const bm25 = 1 / (1 + Math.abs(r.rank));
+      return { chunkId: r.chunkId, score: coverage * 10 + bm25 };
+    });
+
+    return scored.sort((a, b) => b.score - a.score).slice(0, k);
   }
 
   getChunks(chunkIds: string[]): Map<string, ChunkRow> {
@@ -538,6 +799,26 @@ export class SqliteIndex {
     return map;
   }
 
+  /**
+   * Map chunk id → document id for a set of chunks.
+   *
+   * The search trace stores chunk ids, so the evaluation needs the document
+   * each candidate belongs to. One query for the whole set, rather than one
+   * per candidate.
+   */
+  getDocIdsByChunkIds(chunkIds: string[]): Map<string, string> {
+    const map = new Map<string, string>();
+    if (!chunkIds.length) return map;
+    const placeholders = chunkIds.map(() => "?").join(",");
+    const rows = this.db
+      .prepare(
+        `SELECT chunk_id, doc_id FROM chunks WHERE chunk_id IN (${placeholders})`,
+      )
+      .all(...chunkIds) as { chunk_id: string; doc_id: string }[];
+    for (const r of rows) map.set(r.chunk_id, r.doc_id);
+    return map;
+  }
+
   writeTrace(trace: {
     query: string;
     options: unknown;
@@ -560,5 +841,39 @@ export class SqliteIndex {
         JSON.stringify(trace.fused),
         JSON.stringify(trace.timings),
       );
+  }
+
+  /**
+   * Trim the trace table.
+   *
+   * The traces are the only table that grows without bound — every query
+   * appends a row. They are also what a failed query is later reconstructed
+   * from, so they are kept for a while, but not forever.
+   */
+  pruneTraces(options?: { keepDays?: number; keepRows?: number }): number {
+    const keepDays = options?.keepDays ?? 90;
+    const keepRows = options?.keepRows ?? 10000;
+
+    const cutoff = new Date(Date.now() - keepDays * 86400_000).toISOString();
+    const older = this.db
+      .prepare(`SELECT COUNT(*) AS n FROM search_traces WHERE created_at < ?`)
+      .get(cutoff) as { n: number };
+    if (older.n > 0) {
+      this.db.prepare(`DELETE FROM search_traces WHERE created_at < ?`).run(cutoff);
+    }
+
+    const total = this.db
+      .prepare(`SELECT COUNT(*) AS n FROM search_traces`)
+      .get() as { n: number };
+    if (total.n > keepRows) {
+      this.db
+        .prepare(
+          `DELETE FROM search_traces WHERE id NOT IN (
+             SELECT id FROM search_traces ORDER BY id DESC LIMIT ?
+           )`,
+        )
+        .run(keepRows);
+    }
+    return older.n;
   }
 }

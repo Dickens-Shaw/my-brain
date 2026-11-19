@@ -17,43 +17,53 @@ export async function hybridSearch(
 
   const timings: Record<string, number> = {};
   const t0 = Date.now();
+  const mode = options.mode ?? "hybrid";
 
   let vectorHits: { chunkId: string; score: number }[] = [];
-  try {
-    const [qEmb] = await embedder.embed([options.query]);
-    const t1 = Date.now();
-    timings.embed = t1 - t0;
-    vectorHits = index.vectorSearch(qEmb!, 50, filter);
-    timings.vector = Date.now() - t1;
-  } catch (err) {
-    timings.embed_error = 1;
-    console.error(
-      "vector search skipped:",
-      err instanceof Error ? err.message : err,
-    );
+  if (mode !== "bm25") {
+    try {
+      const [qEmb] = await embedder.embed([options.query]);
+      const t1 = Date.now();
+      timings.embed = t1 - t0;
+      vectorHits = index.vectorSearch(qEmb!, 50, filter);
+      timings.vector = Date.now() - t1;
+    } catch (err) {
+      timings.embed_error = 1;
+      console.error(
+        "vector search skipped:",
+        err instanceof Error ? err.message : err,
+      );
+    }
   }
 
   const t2 = Date.now();
   let bm25Hits: { chunkId: string; score: number }[] = [];
-  try {
-    bm25Hits = index.bm25Search(options.query, 50, filter);
-  } catch {
-    bm25Hits = [];
+  if (mode !== "vector") {
+    try {
+      bm25Hits = index.bm25Search(options.query, 50, filter);
+    } catch {
+      bm25Hits = [];
+    }
   }
   timings.bm25 = Date.now() - t2;
 
   const t3 = Date.now();
-  const fused = rrfFuse([vectorHits, bm25Hits]).slice(0, limit);
+  const fused =
+    mode === "hybrid"
+      ? rrfFuse([vectorHits, bm25Hits]).slice(0, limit)
+      : (mode === "vector" ? vectorHits : bm25Hits).slice(0, limit);
   timings.fuse = Date.now() - t3;
 
   const chunkMap = index.getChunks(fused.map((f) => f.chunkId));
   const vectorRank = new Map(vectorHits.map((h, i) => [h.chunkId, i + 1]));
   const bm25Rank = new Map(bm25Hits.map((h, i) => [h.chunkId, i + 1]));
 
+  const excluded = new Set(options.excludeDocIds ?? []);
   const hits: SearchHit[] = fused
     .map((f) => {
       const c = chunkMap.get(f.chunkId);
       if (!c) return null;
+      if (excluded.has(c.docId)) return null;
       return {
         chunkId: c.chunkId,
         docId: c.docId,

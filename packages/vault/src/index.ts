@@ -12,3 +12,15 @@ export {
   writeMachineDocument,
   type VaultDocument,
 } from "./documents.js";
+export {
+  MACHINE_FIELDS,
+  HUMAN_FIELDS,
+  fieldOwnership,
+  machineFieldsHash,
+  bodyHash,
+  decideSync,
+  mergeFrontmatter,
+  type SyncDecision,
+  type FieldOwnership,
+} from "./sync.js";
+export { tidyMachineArea, type TidyResult } from "./tidy.js";

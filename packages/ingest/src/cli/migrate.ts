@@ -3,7 +3,10 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { loadConfig } from "@my-brain/config";
 import { normalizeAll } from "../normalize/index.js";
+import { emptyRegistry } from "../normalize/assign-ids.js";
+import { registryFromVault } from "../normalize/vault-registry.js";
 import { dedupeDocs } from "../dedupe.js";
+import { dedupeByBodyText } from "../dedupe-body.js";
 import { embedDocuments, loadDocEmbeddings } from "../embed-docs.js";
 import { induceTopics, loadTaxonomy } from "../topics.js";
 import { classifyDocs, loadClassified } from "../classify.js";
@@ -45,7 +48,19 @@ async function runStage(stage: Stage, migrateRoot: string): Promise<void> {
     case "normalize": {
       const repoRoot = findRepoRoot();
       console.log("Stage normalize…");
-      const result = normalizeAll(repoRoot);
+      // Ids are permanent: a document keeps the id it already has in the
+      // Vault. The registry is rebuilt from the Vault on every run, so the
+      // mapping never becomes a second source of truth.
+      let registry = emptyRegistry();
+      try {
+        const config = loadConfig({ requireVaultExists: false });
+        registry = registryFromVault(config.vaultPath);
+      } catch (err) {
+        console.warn(
+          `  no Vault registry (${err instanceof Error ? err.message : String(err)}) — assigning fresh ids`,
+        );
+      }
+      const result = normalizeAll(repoRoot, registry);
       writeJson(join(migrateRoot, "normalized.json"), result.docs);
       writeJson(join(migrateRoot, "normalize-skipped.json"), result.skipped);
       const bySource: Record<string, number> = {};
@@ -62,13 +77,19 @@ async function runStage(stage: Stage, migrateRoot: string): Promise<void> {
         join(migrateRoot, "normalized.json"),
         "Run --stage normalize first.",
       );
-      const result = dedupeDocs(docs);
-      writeJson(join(migrateRoot, "deduped.json"), result.docs);
-      writeJson(join(migrateRoot, "dedupe-groups.json"), result.groups);
+      const byUrl = dedupeDocs(docs);
+      const byBody = dedupeByBodyText(byUrl.docs);
+      writeJson(join(migrateRoot, "deduped.json"), byBody.docs);
+      writeJson(join(migrateRoot, "dedupe-groups.json"), [
+        ...byUrl.groups,
+        ...byBody.groups,
+      ]);
       console.log(
-        `  docs: ${result.docs.length} (removed ${docs.length - result.docs.length} duplicates)`,
+        `  docs: ${byBody.docs.length} (removed ${docs.length - byBody.docs.length} duplicates)`,
       );
-      console.log(`  groups: ${result.groups.length}`);
+      console.log(
+        `  groups: ${byUrl.groups.length} by url, ${byBody.groups.length} by body text`,
+      );
       return;
     }
     case "embed": {
@@ -136,9 +157,20 @@ async function runStage(stage: Stage, migrateRoot: string): Promise<void> {
       console.log(
         `  articles: ${report.written_articles}, chapters: ${report.written_chapters}, maps: ${report.maps}`,
       );
+      if (report.repaired_topics) {
+        console.log(
+          `  repaired topics: ${report.repaired_topics} documents had an unusable topic and were placed in the pending bucket`,
+        );
+      }
       if (report.errors.length) {
         console.error(`  errors: ${report.errors.length}`);
         for (const e of report.errors.slice(0, 20)) console.error(`    ${e}`);
+        if (report.errors.length > 20) {
+          console.error(`    … and ${report.errors.length - 20} more`);
+        }
+        console.error(
+          "  These documents were NOT written to the Vault. See .data/migrate/write-report.json",
+        );
       }
       return;
     }

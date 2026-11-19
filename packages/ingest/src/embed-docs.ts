@@ -9,6 +9,13 @@ import { embedTexts } from "./openai.js";
 export type DocEmbeddingStore = {
   model: string;
   dimensions: number;
+  /**
+   * Cache key → vector.
+   *
+   * The key is `id` + body hash, not just `id`: ids are permanent, but the
+   * body behind an id can change when the source article is updated. Keying
+   * on the id alone would keep serving a stale vector for changed content.
+   */
   vectors: Record<string, number[]>;
 };
 
@@ -16,12 +23,25 @@ function storePath(migrateRoot: string): string {
   return join(migrateRoot, "doc-embeddings.json");
 }
 
+/** Cache key for a document's vector. */
+export function embedKey(doc: {
+  id: string;
+  body_hash: string;
+}): string {
+  return `${doc.id}@${doc.body_hash.slice(0, 16)}`;
+}
+
 export function loadDocEmbeddings(migrateRoot: string): DocEmbeddingStore {
   const path = storePath(migrateRoot);
   if (!existsSync(path)) {
     return { model: "", dimensions: 0, vectors: {} };
   }
-  return readJson<DocEmbeddingStore>(path);
+  const parsed = readJson<Partial<DocEmbeddingStore>>(path);
+  return {
+    model: parsed.model ?? "",
+    dimensions: parsed.dimensions ?? 0,
+    vectors: parsed.vectors ?? {},
+  };
 }
 
 export async function embedDocuments(options: {
@@ -41,7 +61,7 @@ export async function embedDocuments(options: {
   store.dimensions = config.embeddingDimensions;
 
   const targets = docs.filter((d) => d.type === "article");
-  const pending = targets.filter((d) => !store.vectors[d.id]);
+  const pending = targets.filter((d) => !store.vectors[embedKey(d)]);
   console.log(
     `Doc embeddings: ${targets.length - pending.length}/${targets.length} cached, ${pending.length} to fetch`,
   );
@@ -58,7 +78,7 @@ export async function embedDocuments(options: {
       texts,
     });
     for (let j = 0; j < batch.length; j++) {
-      store.vectors[batch[j]!.id] = embeddings[j]!;
+      store.vectors[embedKey(batch[j]!)] = embeddings[j]!;
     }
     writeJson(storePath(migrateRoot), store);
     console.log(

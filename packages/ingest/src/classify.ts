@@ -2,13 +2,15 @@ import { join } from "node:path";
 import type { AppConfig } from "@my-brain/config";
 import type { ClassifiedDoc, NormalizedDoc } from "./types.js";
 import type { DocEmbeddingStore } from "./embed-docs.js";
+import { embedKey } from "./embed-docs.js";
 import { loadTaxonomy, type TopicTaxonomy } from "./topics.js";
 import { nearestCentroid } from "./kmeans.js";
 import { chatJson } from "./openai.js";
 import { existsSync } from "node:fs";
 import { readJson, writeJson } from "./fsutil.js";
+import { PENDING_TOPIC } from "./topics-path.js";
 
-const PENDING = "待确认/未分类";
+const PENDING = PENDING_TOPIC;
 const SCORE_LOW = 0.35;
 const MARGIN_LOW = 0.05;
 
@@ -56,13 +58,19 @@ export async function classifyDocs(options: {
     book: 0,
   };
 
-  // Checkpoint: resume
+  // Checkpoint: resume. Keyed by id + body hash, so a document whose source
+  // body changed is classified again instead of reusing the stale result.
   const existing = loadClassified(migrateRoot) ?? [];
-  const done = new Map(existing.map((d) => [d.id, d]));
+  const done = new Map<string, ClassifiedDoc>();
+  for (const d of existing) {
+    done.set(`${d.id}@${d.body_hash.slice(0, 16)}`, d);
+  }
 
   for (const doc of docs) {
-    if (done.has(doc.id)) {
-      out.push(done.get(doc.id)!);
+    const cacheKey = `${doc.id}@${doc.body_hash.slice(0, 16)}`;
+    const cached = done.get(cacheKey);
+    if (cached) {
+      out.push(cached);
       continue;
     }
 
@@ -73,12 +81,12 @@ export async function classifyDocs(options: {
         classify_method: "book",
       };
       out.push(classified);
-      done.set(doc.id, classified);
+      done.set(cacheKey, classified);
       byMethod.book! += 1;
       continue;
     }
 
-    const vec = embeddings.vectors[doc.id];
+    const vec = embeddings.vectors[embedKey(doc)];
     if (!vec) {
       const classified: ClassifiedDoc = {
         ...doc,
@@ -86,7 +94,7 @@ export async function classifyDocs(options: {
         classify_method: "pending",
       };
       out.push(classified);
-      done.set(doc.id, classified);
+      done.set(cacheKey, classified);
       pendingIds.push(doc.id);
       byMethod.pending! += 1;
       continue;
@@ -144,12 +152,14 @@ export async function classifyDocs(options: {
 
     const classified: ClassifiedDoc = { ...doc, topics, classify_method: method };
     out.push(classified);
-    done.set(doc.id, classified);
+    done.set(cacheKey, classified);
     byMethod[method]! += 1;
     if (method === "pending") pendingIds.push(doc.id);
 
     if (out.length % 50 === 0) {
-      writeJson(classifiedPath(migrateRoot), [...done.values()]);
+      // Write the full output, not just the cache: the cache is keyed by
+      // id+hash, so old entries for changed documents must survive too.
+      writeJson(classifiedPath(migrateRoot), out);
       console.log(`  classified ${out.length}/${docs.length}`);
     }
   }

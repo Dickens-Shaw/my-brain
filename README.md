@@ -164,6 +164,29 @@ pnpm mcp                           # Cursor MCP (stdio)
 exactly one. Stages hand off through JSON in `.data/migrate/`, so any stage can be
 re-run alone.
 
+#### One-shot pipeline
+
+`scripts/full-pipeline.sh` runs the whole chain with a preflight check:
+
+```bash
+bash scripts/full-pipeline.sh            # normalize → embed → induce, then stops for review
+bash scripts/full-pipeline.sh --from classify   # classify → write → index → eval
+bash scripts/full-pipeline.sh --check    # only verify the embedding API works
+```
+
+The embedding API is the hard dependency, so the script checks it before
+anything else — a dead key fails in two seconds instead of after the migration
+has already paid for document embeddings. It also checks that the model
+returns the dimension `EMBEDDING_DIMENSIONS` claims, which catches a
+mismatched model before the index is built.
+
+`pnpm smoke` runs the retrieval pipeline against a local deterministic
+embedding, so the chunking, indexing and search code paths can be verified
+without an API key.
+
+`scripts/mock-embeddings.mjs` is the mock endpoint that makes this possible —
+it is for testing the plumbing, not for real retrieval quality.
+
 **Migration stops on purpose after `induce`.** Clustering proposes a topic
 taxonomy and the LLM names each cluster, but that taxonomy decides the physical
 directory layout of ~4.8k documents — changing it after `write` means moving
