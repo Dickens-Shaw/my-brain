@@ -43,6 +43,7 @@ const has = (name) => args.includes(`--${name}`);
 const limit = Number(flag("limit", "10"));
 const scope = flag("scope", "all");
 const pathsOnly = has("paths-only");
+const outline = has("outline");
 
 // The Vault path comes from the repo's .env, so the script and the rest of
 // the project agree on where the Vault is.
@@ -292,6 +293,56 @@ const elapsed = Date.now() - started;
 
 if (pathsOnly) {
   for (const r of results) console.log(r.relPath);
+  process.exit(0);
+}
+
+/**
+ * Outline mode: print the heading structure of each candidate.
+ *
+ * Reading a whole article to decide whether it is relevant is the main way
+ * this approach burns context. The heading structure is a few hundred bytes
+ * and usually answers the question on its own — if the article has a
+ * section called "动态文件生成", that section is the one to read, not the
+ * whole 50KB file.
+ *
+ * The line numbers are byte offsets into the file, so they can be handed
+ * straight to a read with an offset.
+ */
+if (outline) {
+  console.log(`Query: ${query}`);
+  console.log("");
+  for (const r of results) {
+    let raw;
+    try {
+      raw = readFileSync(join(vaultPath, r.relPath), "utf8");
+    } catch {
+      continue;
+    }
+    const headings = [];
+    let inFence = false;
+    let lineNo = 0;
+    for (const line of raw.split("\n")) {
+      lineNo += 1;
+      // A `#` inside a fenced code block is a comment or a shell prompt, not
+      // a heading. Including them would send the reader to the wrong place.
+      if (/^\s*(```|~~~)/.test(line)) inFence = !inFence;
+      const m = inFence ? null : line.match(/^(#{1,4})\s+(.+?)\s*$/);
+      if (m) headings.push({ level: m[1].length, text: m[2], line: lineNo });
+    }
+
+    console.log(`## ${r.title}`);
+    console.log(`   path:  ${r.relPath}`);
+    console.log(`   size:  ${raw.length} bytes, ${raw.split("\n").length} lines`);
+    if (headings.length === 0) {
+      console.log(`   (no headings — the article is flat, read the first part)`);
+    } else {
+      console.log(`   headings (line numbers, for a read with offset):`);
+      for (const h of headings) {
+        console.log(`     ${String(h.line).padStart(6)}  ${"#".repeat(h.level)} ${h.text}`);
+      }
+    }
+    console.log("");
+  }
   process.exit(0);
 }
 

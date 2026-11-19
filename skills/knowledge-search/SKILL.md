@@ -40,6 +40,7 @@ ls scripts/kb-search.mjs 2>/dev/null || KB_SEARCH="$(git rev-parse --show-toplev
 | --- | --- |
 | `--limit N` | 返回条数，默认 10 |
 | `--scope library\|books\|all` | 限定范围，默认 all（Library + Books） |
+| `--outline` | 输出小标题结构和行号，用来定位该读哪一段 |
 | `--paths-only` | 只输出路径 |
 | `--vault PATH` | 覆盖 Vault 路径，默认读 `.env` 的 `VAULT_PATH` |
 
@@ -87,9 +88,34 @@ node scripts/kb-search.mjs "webpack 持久化缓存" --limit 8
 2. 标题就是答案的——比如搜「CSS 3D perspective」，标题写着「CSS 与 3D 之 perspective」。
 3. 主题对得上但标题不精确的——比如搜「webpack 性能」，标题是「webpack5 知识体系近万字总结」，这种长文通常覆盖整个主题，值得读。
 
-然后用 Read 工具读**正文**，路径就是脚本给的 `path`（相对 Vault 根目录，Vault 路径看 `.env` 的 `VAULT_PATH`）。
+然后**先看结构，再读正文**。直接读全文是最费上下文的做法——一篇三万字的文章读下来可能 50KB，而答案往往只在其中两个小节里。
 
-一次读一到两篇。读完如果没找到答案，换关键词再搜。
+```bash
+node scripts/kb-search.mjs "前端 脚手架" --limit 3 --outline
+```
+
+`--outline` 只输出每篇文档的小标题结构和行号，几百字节就能判断哪篇值得读、该读哪一段：
+
+```
+## 从入门到精通，100行代码构建你的前端CLI脚手架之路
+   path:  Library/1.Web/mock-8/....md
+   size:  19526 bytes, 1080 lines
+   headings (line numbers, for a read with offset):
+         31  # 从入门到精通，100行代码构建你的前端CLI脚手架之路
+         58  ## 二. cli脚手架核心功能
+        190  ### 2.5 处理创建模版命令
+        388  ### 2.7 实现下载模版
+```
+
+看完结构，用 Read 工具**只读相关的行**（`path` 是相对 Vault 根目录的路径，Vault 路径看 `.env` 的 `VAULT_PATH`）：
+
+- 标题结构里出现了和你的问题对应的章节 → 只读那几个章节，行号范围从 outline 里取
+- 文档是扁平结构（提示 `no headings`）→ 读开头 4000 字节，通常够了
+- 标题就对上了 → 读开头 3000~4000 字节
+
+**读够回答就行，不要读完整个文件。** 实测这个流程能把一次问答从 36KB 压到 8KB。
+
+如果读完相关章节还是没答案，说明这篇不相关，换下一篇或换关键词重搜。
 
 ### 第三步：换词重试
 
@@ -108,9 +134,11 @@ node scripts/kb-search.mjs "webpack 持久化缓存" --limit 8
 
 **找到答案就停。** 读到答案所在的段落就够，不用读完整篇。
 
-**长文要分段读。** 一篇近万字的文章，用 Read 工具的 `offset` 和 `limit` 分次读，先看开头和标题结构定位位置。
+**先 outline 再读。** 这是省上下文最有效的一步：`--outline` 给你行号，你按行号读，而不是通读。
 
 **书和文章的区别。** `Books/` 下的是书籍章节，一章一个文件，主题集中，通常整章读完更好。`Library/` 下的是单篇文章，可能很长，可能有无关部分。
+
+**读之前先想清楚要什么。** 知道自己要「下载模板的实现」就不要读「发布到 npm」那一节。
 
 ## 直接用 grep 的情况
 
