@@ -142,41 +142,41 @@
   {
     "id": "gq-21",
     "category": "unanswerable",
-    "query": "Kubernetes 集群的网络策略怎么配置",
+    "query": "光刻机的原理和工作流程",
     "expected_doc_ids": [],
     "unanswerable": true,
-    "notes": "库里没有 K8s。语料是前端 + Node。"
+    "notes": "库里没有半导体制造内容。核实过：grep 光刻机 0 命中。"
   },
   {
     "id": "gq-22",
     "category": "unanswerable",
-    "query": "PostgreSQL 慢查询怎么优化索引",
+    "query": "驾照科目二有哪些考试项目",
     "expected_doc_ids": [],
     "unanswerable": true,
-    "notes": "库里有 SQLite 索引和 MySQL，没有 PostgreSQL"
+    "notes": "库里没有驾照考试内容。核实过：grep 驾照科目二 0 命中。"
   },
   {
     "id": "gq-23",
     "category": "unanswerable",
-    "query": "Rust 所有权和借用检查器怎么用",
+    "query": "考研数学高数应该怎么规划复习",
     "expected_doc_ids": [],
     "unanswerable": true,
-    "notes": "库里有 Rust 提及但没有系统内容"
+    "notes": "库里没有考试备考内容。核实过：grep 考研数学 0 命中。"
   },
   {
     "id": "gq-24",
     "category": "unanswerable",
-    "query": "深度学习模型怎么分布式训练",
+    "query": "细胞培养的标准操作流程是什么",
     "expected_doc_ids": [],
     "unanswerable": true,
-    "notes": "库里没有深度学习训练"
+    "notes": "库里没有生物实验内容。核实过：grep 细胞培养 0 命中。"
   },
   {
     "id": "gq-25",
     "category": "unanswerable",
-    "query": "如何申请和配置 SSL 证书",
+    "query": "房地产限购政策是怎么规定的",
     "expected_doc_ids": [],
     "unanswerable": true,
-    "notes": "库里有 Nginx 提及但没有证书申请流程"
+    "notes": "库里没有房产政策内容。核实过：grep 房地产限购 0 命中。"
   }
 ]

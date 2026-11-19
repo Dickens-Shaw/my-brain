@@ -187,6 +187,42 @@ without an API key.
 `scripts/mock-embeddings.mjs` is the mock endpoint that makes this possible —
 it is for testing the plumbing, not for real retrieval quality.
 
+#### Index-free retrieval
+
+The `knowledge-search` skill finds documents without an index, embeddings or
+chunking — it searches the Vault's Markdown files directly and ranks them by
+term coverage.
+
+```bash
+bash scripts/install-skills.sh    # link skills/ into .cursor/skills/ and ~/.claude/skills
+pnpm kb:search "webpack 持久化缓存" --limit 8
+pnpm kb:eval                      # same golden questions, grep path
+```
+
+The skill definitions live in `skills/` so they are version controlled;
+`.cursor/` is gitignored, so a skill written there would never reach another
+machine. `install-skills.sh` symlinks them into place rather than copying, so
+editing a skill in `skills/` takes effect immediately.
+
+The search script is more useful than a raw `grep -r`: it ranks by how many
+of the query's terms a document contains rather than by match count, gives
+title matches a higher weight, matches Chinese on overlapping bigrams, and
+drops question words like "怎么" that would otherwise narrow a query to
+nothing. It also warns when the best candidate only covers part of the query
+— grep always returns something, and that warning is the only signal that the
+Vault does not cover the topic.
+
+`pnpm kb:eval` runs the same golden question set as `pnpm eval`, so the two
+retrieval paths can be compared on equal terms. It scores by distinct
+document, not by chunk — the index-backed arm returns chunks, so its top 10
+can hold ten chunks of one article, and a document that matched ten times is
+still one document.
+
+Measured on the current Vault (5242 documents), the grep path scores 70% top5
+/ 75% top10 / 0.579 MRR, at 84ms per query against a 309MB corpus. The
+index-backed path needs an embedding API and a ~950MB index; this one needs
+nothing but the Vault.
+
 **Migration stops on purpose after `induce`.** Clustering proposes a topic
 taxonomy and the LLM names each cluster, but that taxonomy decides the physical
 directory layout of ~4.8k documents — changing it after `write` means moving
