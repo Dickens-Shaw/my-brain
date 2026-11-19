@@ -204,6 +204,10 @@ The skill definitions live in `skills/` so they are version controlled;
 machine. `install-skills.sh` symlinks them into place rather than copying, so
 editing a skill in `skills/` takes effect immediately.
 
+`wechat-export-articles` and `wechat-export-audio` live in the same
+`skills/` directory. Their scripts stay in `exporters/wechat-favorites/scripts/`
+and are not copied into the skill folders; cloning this repo is enough.
+
 The search script is more useful than a raw `grep -r`: it ranks by how many
 of the query's terms a document contains rather than by match count, gives
 title matches a higher weight, matches Chinese on overlapping bigrams, and
